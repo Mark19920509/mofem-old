@@ -6,10 +6,10 @@ SET (mofem_VERSION_MAJOR 0)
 SET (mofem_VERSION_MINOR 1)
 
 # Eigen include directory
-SET (EIGEN_DIR "C:/Users/Mohamed/Dropbox/projects/Eigen" CACHE PATH "Eigen include path")
+SET (EIGEN_DIR "" CACHE PATH "Eigen include path")
 
 # Boost include directory
-SET (BOOST_DIR "C:/boost/boost_1_57_0" CACHE PATH "Boost include path")
+SET (BOOST_DIR "" CACHE PATH "Boost include path")
     
 # Setup includes
 INCLUDE_DIRECTORIES(${EIGEN_DIR} ${BOOST_DIR})
