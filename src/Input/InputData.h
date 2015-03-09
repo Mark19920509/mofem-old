@@ -7,14 +7,21 @@
 
 #include <vector>
 #include <array>
+#include <tuple>
 
 namespace Input
 {
+
+    using DirichletBC = std::tuple<Node::Id, DOF::Lone, numeric>;
+
     struct Data
     {
         // Node Data
         std::vector<std::array<numeric, 3>> node_pos;
         std::vector<std::array<numeric, 9>> node_cs;
+
+        // Dirichlet DOF Data
+        std::vector<DirichletBC> dirichlet_bc;
 
         // Element data
         std::vector<Element::Type> elem_type;

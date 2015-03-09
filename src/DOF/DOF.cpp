@@ -49,7 +49,7 @@ std::string DOF::setStr(Lone d){
     if (d == 3) return "RX";
     if (d == 4) return "RY";
     if (d == 5) return "RZ";
-    return "UNKNOWN";
+    return std::to_string((int)d);
 }
 
 Lone DOF::nextDOF(Set S, Lone d){

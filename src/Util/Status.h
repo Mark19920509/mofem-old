@@ -13,6 +13,8 @@ struct Status{
 
         (NOT_IMPLEMENTED)
 
+        (DOF_INVALID_LONE)
+
         (NODE_INVALID_ID)
 
         (MATERIAL_INVALID_ID)

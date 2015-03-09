@@ -11,6 +11,12 @@ namespace Input
     Status addNode(Input::Data& input, 
                    numeric x, numeric y, numeric z);
 
+    // Dirichlet BC
+    Status addDirichletBC(Input::Data& input,
+                          Node::Id nid,
+                          DOF::Lone dof,
+                          numeric val);
+
     // Element input handlers
     Status addElement(Input::Data& input,
                       Element::Type elem_type,

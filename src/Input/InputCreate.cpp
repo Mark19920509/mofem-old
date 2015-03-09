@@ -21,6 +21,18 @@ Status Input::addNode(Input::Data& input, numeric x, numeric y, numeric z)
 }
 
 
+Status Input::addDirichletBC(Input::Data& input, Node::Id nid, DOF::Lone dof, numeric val){
+    if (nid >= (signed int) input.node_pos.size() || nid < 0)
+        return{ Status::NODE_INVALID_ID, "NodeID : " + to_string(nid) };
+
+    if (dof >= DOF::COUNT || dof < 0)
+        return{ Status::DOF_INVALID_LONE, "DOF : " + to_string(dof) };
+
+    input.dirichlet_bc.push_back(DirichletBC(nid, dof, val));
+    return Status::SUCCESS;
+}
+
+
 Status Input::addElement(Input::Data& input, Element::Type elem_type, Material::Id mat_id, vector<numeric> elem_param, vector<Node::Id> node_ids)
 {
     Status result;
@@ -39,6 +51,7 @@ Status Input::addElement(Input::Data& input, Element::Type elem_type, Material::
 
     return Status::SUCCESS;
 }
+
 
 Status Input::addMaterial(Input::Data& input, Material::Type mat_type, vector<numeric> mat_param)
 {
@@ -64,11 +77,13 @@ Status checkIfValidNodeIDs(Node::Count num_nodes, vector<Node::Id>& node_ids)
     return Status::SUCCESS;
 }
 
+
 Status checkIfValidMaterialID(Material::Count num_mat, Material::Id mat_id)
 {
     if (mat_id < 0 || mat_id >= num_mat) return{ Status::MATERIAL_INVALID_ID, "MatID: " + to_string(mat_id) };
     return Status::SUCCESS;
 }
+
 
 Status checkElementDefinition(Element::Type tid, Node::Count num_nodes, int num_params)
 {
@@ -80,6 +95,7 @@ Status checkElementDefinition(Element::Type tid, Node::Count num_nodes, int num_
         return{ Status::ELEMENT_INVALID_NUM_PARAMETERS, "Given: " + to_string(num_params) };
     return Status::SUCCESS;
 }
+
 
 Status checkMaterialDefinition(Material::Type tid, int num_params)
 {
