@@ -80,6 +80,9 @@ SET(SRC_UTIL
      ${SRC_NODE}
      ${SRC_SOLUTION}
      ${SRC_UTIL})
+
+# Preproccessor 
+ADD_DEFINITIONS(-DEIGEN_DEFAULT_TO_ROW_MAJOR)
     
 # Executable
 ADD_EXECUTABLE(mofem ${SRC_ALL})
