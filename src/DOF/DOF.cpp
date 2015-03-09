@@ -22,6 +22,15 @@ int DOF::setContains(Set S, Lone D){
     return (S & (1 << D)) >> D;
 }
 
+int DOF::setIndexOf(Set S, Lone D){
+    int index = -1;
+    for (int d = 0; d < COUNT; d++){
+        if (setContains(S, (Lone)d)) index++;
+        if (d == D) return index;
+    }
+    return index;
+}
+
 Count DOF::setSize(Set S){
     return setContains(S, X) + setContains(S, Y) + setContains(S, Z) +
            setContains(S, RX) + setContains(S, RY) + setContains(S, RZ);

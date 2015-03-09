@@ -14,6 +14,7 @@ namespace DOF{
     Set setRemove(Set A, Set B);
     Set setIntersection(Set A, Set B);
     int setContains(Set S, Lone D);
+    int setIndexOf(Set S, Lone D);
     Count setSize(Set S);
 
     Lone firstDOF(Set S);
