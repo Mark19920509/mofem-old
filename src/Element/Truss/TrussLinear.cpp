@@ -83,7 +83,7 @@ namespace Element{
                     T.block<2, 1>(2, 1) = T_node;
 
                     // Calculate internal force
-                    if (flags[Element::CALC_INT_FORCE] == true){
+                    if (flags[Element::CALC_INT_FORCE]){
                         fint_local(0) = -sig_11*A;
                         fint_local(1) =  sig_11*A;
 
@@ -99,6 +99,8 @@ namespace Element{
                         numeric fac = C_11*A / L_ref;
                         ke_local << fac, -fac, -fac, fac;
                         ke_global = T*ke_local*T.transpose();
+
+                        // Scatter
                         Model::scatterStiffness(model, sol, eid, ke_global, sol.k_e);
                     }
 
