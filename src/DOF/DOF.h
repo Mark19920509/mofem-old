@@ -8,6 +8,9 @@ namespace DOF{
     using Id = int;
     using Set = char;
     using Count = int;
+
+
+    const DOF::Id INVALID_ID = -1;
     
     Set setInverse(Set S);
     Set setUnion(Set A, Set B);

@@ -9,9 +9,10 @@ namespace Solution{
         Vector<numeric> v;      // Velocity
         Vector<numeric> a;      // Acceleration
 
-        SparseMatrix<numeric> ke;    // Linear Stiffness
+        SparseMatrix<numeric> k_e;    // Linear Stiffness
 
-        Vector<numeric> fint;   // Internal force
-        Vector<numeric> fext;   // External force
+        Vector<numeric> f_int;   // Internal force
+        Vector<numeric> f_ext;   // External force
+        Vector<numeric> f_dbc;   // RHS due to Dirichlet BC
     };
 }

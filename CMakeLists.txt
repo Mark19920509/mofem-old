@@ -51,6 +51,7 @@ SET(SRC_MATERIAL_LINEAR_ELASTIC
 SET(SRC_MODEL
     src/Model/ModelData.h
     src/Model/ModelGatherScatter.h
+    src/Model/ModelGatherScatter.cpp
     src/Model/ModelCreate.h
     src/Model/ModelCreate.cpp)
 SET(SRC_NODE

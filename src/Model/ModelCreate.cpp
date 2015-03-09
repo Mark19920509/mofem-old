@@ -48,6 +48,7 @@ Status Model::setupMaterialData(Input::Data& input, Model::Data& model)
 }
 
 Status Model::setupBC(Input::Data& input, Model::Data& model){
+    model.ndof_fixed = 0;
     model.is_dof_fixed = Vector<char>::Zero(model.ndof);
     model.dof_value = Vector<numeric>::Zero(model.ndof);
 
@@ -60,10 +61,43 @@ Status Model::setupBC(Input::Data& input, Model::Data& model){
             int i = DOF::setIndexOf(model.nds(nid), dof);
             if (i >= 0){
                 DOF::Id did = model.ndm(nid, i);
-                model.is_dof_fixed(did) = true;
+                if (!model.is_dof_fixed(did)){
+                    model.is_dof_fixed(did) = true;
+                    model.ndof_fixed++;
+                }
                 model.dof_value(did) = val;
             }
         }
+    }
+
+    model.ndof_solve = model.ndof - model.ndof_fixed;
+
+    // Mapping to DOF ids taking into account BC
+    Array<DOF::Id> bcdm(model.ndof);
+    DOF::Id did = 0;
+    for (DOF::Id i = 0; i < model.ndof; i++){
+        if (model.is_dof_fixed(i)){
+            bcdm(i) = DOF::INVALID_ID;
+            continue;
+        }
+        bcdm(i) = did;
+        did++;
+    }
+
+    // Adjust NDM and EDM for BC (DOFs will now have shifted IDs or INVALID_ID)
+    model.ndm_bc.resize(model.ndm.rows(), model.ndm.cols());
+    model.edm_bc.resize(model.edm.rows(), model.edm.cols());
+
+    // Copy NDM to NDM_BC applying BCDM mapping
+    for (Node::Id nid = 0; nid < model.ndm_bc.rows(); nid++){
+        for (int i = 0; i < model.ndm_bc.cols(nid); i++)
+            model.ndm_bc(nid,i) = bcdm(model.ndm(nid,i));
+    }
+
+    // Copy EDM to EDM_BC applying BCDM mapping
+    for (Element::Id eid = 0; eid < model.edm_bc.rows(); eid++){
+        for (int i = 0; i < model.edm_bc.cols(eid); i++)
+            model.edm_bc(eid, i) = bcdm(model.edm(eid, i));
     }
 
     return Status::SUCCESS;

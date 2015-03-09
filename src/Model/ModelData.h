@@ -34,8 +34,14 @@ namespace Model
         ArrayVC<Node::Id> enm;    // Element Node Map
         ArrayVC<Node::Id> edm;    // Element DOF Map
 
+        // Maps modified for Dirichlet BC
+        ArrayVC<Node::Id> ndm_bc;  
+        ArrayVC<Node::Id> edm_bc;
+
         // Number of DOFs
         DOF::Count ndof;
+        DOF::Count ndof_fixed;
+        DOF::Count ndof_solve;
     };
 
 }
