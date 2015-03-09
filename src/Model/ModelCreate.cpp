@@ -47,6 +47,28 @@ Status Model::setupMaterialData(Input::Data& input, Model::Data& model)
     return Status::SUCCESS;
 }
 
+Status Model::setupBC(Input::Data& input, Model::Data& model){
+    model.is_dof_fixed = Vector<char>::Zero(model.ndof);
+    model.dof_value = Vector<numeric>::Zero(model.ndof);
+
+    for (Input::DirichletBC bc : input.dirichlet_bc){
+        Node::Id nid = std::get<0>(bc);
+        DOF::Lone dof = std::get<1>(bc);
+        numeric val = std::get<2>(bc);
+
+        if (DOF::setContains(model.nds(nid), dof)){
+            int i = DOF::setIndexOf(model.nds(nid), dof);
+            if (i >= 0){
+                DOF::Id did = model.ndm(nid, i);
+                model.is_dof_fixed(did) = true;
+                model.dof_value(did) = val;
+            }
+        }
+    }
+
+    return Status::SUCCESS;
+}
+
 
 // Create node DOF Signatures
 Status Model::createNDS(Model::Data& model)
@@ -77,14 +99,23 @@ Status Model::createNDS(Model::Data& model)
 // Create node DOF map
 Status Model::createNDM(Model::Data& model)
 {
+    using std::vector;
+
     Node::Count num_nodes = (Node::Count) model.node_pos.rows();
 
+    // Number of DOFs per node
+    vector<int> num_dof_per_node(num_nodes);
+    for (int i = 0; i < model.nds.rows(); i++)
+        num_dof_per_node[i] = DOF::setSize(model.nds(i));
+
     // Build Node DOF Map
-    model.ndm.resize(num_nodes);
+    model.ndm.resize(num_nodes, num_dof_per_node);
     DOF::Id did = 0;
     for (Node::Id nid = 0; nid < num_nodes; nid++){
-        model.ndm(nid) = did;
-        did += DOF::setSize(model.nds(nid));
+        for (int i = 0; i < model.ndm.cols(nid); i++){
+            model.ndm(nid, i) = did;
+            did++;
+        }
     }
 
     // Set total number of DOFs
@@ -110,23 +141,14 @@ Status Model::createEDM(Model::Data& model)
     // Build Element DOF Map
     model.edm.resize(num_elems, dofs_per_element);
     DOF::Id local_did;
-    DOF::Id did;
     Node::Id nid;
-    DOF::Set elem_node_dofset;
-    DOF::Set node_dofset;
     for (Element::Id eid = 0; eid < num_elems; eid++){
         local_did = 0;
         for (Node::Id local_nid = 0; local_nid < model.enm.cols(eid); local_nid++){
             nid = model.enm(eid, local_nid);
-            did = model.ndm(nid);
-            node_dofset = model.nds(nid);
-            elem_node_dofset = Element::type_data.dof_sets(model.elem_type(eid), local_nid);
-            for (DOF::Lone i = DOF::firstDOF(node_dofset); i < DOF::COUNT; i = DOF::nextDOF(node_dofset, i)){
-                if ( DOF::setContains(elem_node_dofset, i) ){
-                    model.edm(eid, local_did) = did;
-                    local_did++;
-                }
-                did++;
+            for (int i = 0; i < model.ndm.cols(nid); i++){
+                model.edm(eid, local_did) = model.ndm(nid, i);
+                local_did++;
             }
         }
     }

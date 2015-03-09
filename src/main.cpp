@@ -50,6 +50,10 @@ int main() {
     result = Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 0, 2 });
     CHECK_STATUS(result);
 
+    // BC Condition
+    result = Input::addDirichletBC(input, 1, DOF::X, 1);
+    result = Input::addDirichletBC(input, 3, DOF::Y, 1);
+
     Model::Data model;
     
     Model::setupNodeData(input, model);
@@ -59,6 +63,8 @@ int main() {
     Model::createNDS(model);
     Model::createNDM(model);
     Model::createEDM(model);
+
+    Model::setupBC(input, model);
 
     Solution::Data sol;
     Solution::init(model, sol);
