@@ -39,13 +39,14 @@ int main() {
     Input::addNode(input, 0, 0, 0);
     Input::addNode(input, 0.25, 0, 0);
     Input::addNode(input, 0.5, 0, 0);
+    Input::addNode(input, 0.75, 0, 0);
     Input::addNode(input, 1, 0, 0);
 
     // Element definition
     Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 0, 1 });
     Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 1, 2 });
     Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 2, 3 });
-
+    Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 3, 4 });
 
     // BC Condition
     Input::addDirichletBC(input, 0, DOF::X, 0);
@@ -53,6 +54,7 @@ int main() {
     Input::addDirichletBC(input, 1, DOF::Y, 0);
     Input::addDirichletBC(input, 2, DOF::Y, 0);
     Input::addDirichletBC(input, 3, DOF::Y, 0);
+    Input::addDirichletBC(input, 4, DOF::Y, 0);
 
     Model::Data model;
     
@@ -73,9 +75,6 @@ int main() {
     flags[Element::CALC_INT_FORCE] = true;
     flags[Element::CALC_STIFF_LINEAR] = true;
     Solution::assemble(model, sol, flags);
-
-    std::cout << sol.f_int.transpose() << std::endl;
-    std::cout << sol.f_dbc.transpose() << std::endl;
 
     return 0;
 }

@@ -8,6 +8,10 @@
 
 namespace Model{
 
+    /** Scatter local element stiffness matrix to global stiffness matrix. 
+     *  Takes into account existence of Dirichlet BC. Also constructs the required RHS vector for 
+     *  Dirichlet BC which are fixed with a non-zero value
+     */
     template<typename D1, typename D2>
     Status scatterStiffness(Model::Data const& model, Solution::Data& sol, Element::Id eid, Eigen::MatrixBase<D1> const& local_k, SparseMatrix<D2>& global_k){
         int ndof = model.edm_bc.cols(eid);
@@ -36,6 +40,9 @@ namespace Model{
         return Status::SUCCESS;
     }
 
+    /** Scatter local element force vectors to global force vectors.
+     *  Takes into account existence of Dirichlet BC.
+     */
     template<typename D1, typename D2>
     Status scatterForce(Model::Data const& model, Element::Id eid, Eigen::MatrixBase<D1> const& lvec, Eigen::MatrixBase<D2>& gvec){
         int ndof = model.edm_bc.cols(eid);
@@ -51,6 +58,10 @@ namespace Model{
         return Status::SUCCESS;
     }
 
+    /** Gathers displacements from global displacement vector
+     *  Takes into account existence of Dirichlet BC. If displacement is not found in the solution vector
+     *  the required value is taken from the set value provided in the model. 
+     */
     template<typename D1, typename D2>
     Status gatherDisplacement(Model::Data const& model, Element::Id eid, Eigen::MatrixBase<D1> const& global_u, Eigen::MatrixBase<D2>& local_u){
         int ndof = model.edm_bc.cols(eid);
@@ -61,13 +72,10 @@ namespace Model{
         for (int i = 0; i < ndof; i++){
             mapped_i = model.edm_bc(eid, i);
 
-            if (mapped_i == DOF::INVALID_ID){
-                // If a fixed DOF, get the set value
+            if (mapped_i == DOF::INVALID_ID)
                 local_u(i) = model.dof_value(model.edm(eid, i));
-            }
-            else{
+            else
                 local_u(i) = global_u(mapped_i);
-            }
         }
         return Status::SUCCESS;
     }
