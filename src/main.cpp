@@ -43,7 +43,6 @@ int main() {
     Input::addNode(input, 0, 1, 0);
 
     // Element definition
-    // Test
     result = Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 0, 1 });
     result = Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 1, 2 });
     result = Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 2, 3 });
