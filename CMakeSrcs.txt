@@ -43,6 +43,13 @@ SET(SRC_UTIL
     src/Util/Precision.h
     src/Util/SparseArray.h
     src/Util/Status.h)
+SET(SRC_GUI
+    src/GUI/GUIContext.h
+    src/GUI/GUIContext.cpp)
+SET(SRC_FEM
+    src/FEM/FEMContext.h
+    src/FEM/FEMCreate.h
+    src/FEM/FEMCreate.cpp)
     
  SET(SRC_ALL
      ${SRC_MAIN} 
@@ -56,4 +63,6 @@ SET(SRC_UTIL
      ${SRC_MODEL}
      ${SRC_NODE}
      ${SRC_SOLUTION}
-     ${SRC_UTIL})
+     ${SRC_UTIL}
+     ${SRC_GUI}
+     ${SRC_FEM})

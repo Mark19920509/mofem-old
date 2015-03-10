@@ -3,7 +3,7 @@
 #include <Solution/SolutionCreate.h>
 #include <Element/Truss/Truss.h>
 
-Status Solution::init(Model::Data const& model, Solution::Data& sol){
+Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
 
     Element::Count nelem = model.elem_ids.rows();
 
@@ -14,8 +14,6 @@ Status Solution::init(Model::Data const& model, Solution::Data& sol){
     sol.f_int.resize(model.ndof_solve);
     sol.f_ext.resize(model.ndof_solve);
     sol.f_dbc.resize(model.ndof_solve);
-
-    clear(sol);
 
     // Create sparse matrix structure
     DOF::Id mapped_i;
@@ -42,16 +40,7 @@ Status Solution::init(Model::Data const& model, Solution::Data& sol){
     return Status::SUCCESS;
 }
 
-Status Solution::clear(Solution::Data& sol){
-    sol.u.fill(0);
-    sol.v.fill(0);
-    sol.a.fill(0);
-
-    return Status::SUCCESS;
-}
-
 Status Solution::assemble(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags){
-
     sol.k_e *= 0;
     sol.f_dbc.fill(0);
     sol.f_int.fill(0);

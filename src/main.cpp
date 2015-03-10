@@ -8,73 +8,61 @@
 #include <Util/Status.h>
 
 #include <Material/Material.h>
-
 #include <Element/Element.h>
-
 #include <Input/InputData.h>
 #include <Input/InputCreate.h>
-
 #include <Model/ModelData.h>
 #include <Model/ModelCreate.h>
-
 #include <Solution/SolutionData.h>
 #include <Solution/SolutionCreate.h>
-
 #include <CS/CS.h>
 
+#include <GUI/GUIContext.h>
+
+#include <FEM/FEMContext.h>
+#include <FEM/FEMCreate.h>
 
 int main() {
 
-    Element::defineTypes();
-    Material::defineTypes();
+    FEM::Context fem;
+    FEM::init(fem);
 
-    Input::Data input;
-
-    Status result;
+    GUI::Context gui;
+    GUI::init(gui, 800, 600, "mofem");
+    GUI::start(gui);
 
     // Material definitions
-    Input::addMaterial(input, Material::LINEAR_ELASTIC, { 1, 1 });
+    Input::addMaterial(fem.input, Material::LINEAR_ELASTIC, { 1, 1 });
 
     // Node definitions
-    Input::addNode(input, 0, 0, 0);
-    Input::addNode(input, 0.25, 0, 0);
-    Input::addNode(input, 0.5, 0, 0);
-    Input::addNode(input, 0.75, 0, 0);
-    Input::addNode(input, 1, 0, 0);
+    Input::addNode(fem.input, 0, 0, 0);
+    Input::addNode(fem.input, 0.25, 0, 0);
+    Input::addNode(fem.input, 0.5, 0, 0);
+    Input::addNode(fem.input, 0.75, 0, 0);
+    Input::addNode(fem.input, 1, 0, 0);
 
     // Element definition
-    Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 0, 1 });
-    Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 1, 2 });
-    Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 2, 3 });
-    Input::addElement(input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 3, 4 });
+    Input::addElement(fem.input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 0, 1 });
+    Input::addElement(fem.input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 1, 2 });
+    Input::addElement(fem.input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 2, 3 });
+    Input::addElement(fem.input, Element::TRUSS_LINEAR, 0, { 1.0 }, { 3, 4 });
 
     // BC Condition
-    Input::addDirichletBC(input, 0, DOF::X, 0);
-    Input::addDirichletBC(input, 0, DOF::Y, 0);
-    Input::addDirichletBC(input, 1, DOF::Y, 0);
-    Input::addDirichletBC(input, 2, DOF::Y, 0);
-    Input::addDirichletBC(input, 3, DOF::Y, 0);
-    Input::addDirichletBC(input, 4, DOF::Y, 0);
+    Input::addDirichletBC(fem.input, 0, DOF::X, 0);
+    Input::addDirichletBC(fem.input, 0, DOF::Y, 0);
+    Input::addDirichletBC(fem.input, 1, DOF::Y, 0);
+    Input::addDirichletBC(fem.input, 2, DOF::Y, 0);
+    Input::addDirichletBC(fem.input, 3, DOF::Y, 0);
+    Input::addDirichletBC(fem.input, 4, DOF::Y, 0);
 
-    Model::Data model;
-    
-    Model::setupNodeData(input, model);
-    Model::setupMaterialData(input, model);
-    Model::setupElementData(input, model);
+    FEM::prepareModel(fem);
 
-    Model::createNDS(model);
-    Model::createNDM(model);
-    Model::createEDM(model);
-
-    Model::setupBC(input, model);
-
-    Solution::Data sol;
-    Solution::init(model, sol);
+    FEM::prepareSolution(fem);
 
     Element::FlagVector flags;
     flags[Element::CALC_INT_FORCE] = true;
     flags[Element::CALC_STIFF_LINEAR] = true;
-    Solution::assemble(model, sol, flags);
+    Solution::assemble(fem.model, fem.solution, flags);
 
     return 0;
 }

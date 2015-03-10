@@ -69,40 +69,10 @@ Status Model::setupBC(Input::Data& input, Model::Data& model){
             }
         }
     }
-
     model.ndof_solve = model.ndof - model.ndof_fixed;
-
-    // Mapping to DOF ids taking into account BC
-    Array<DOF::Id> bcdm(model.ndof);
-    DOF::Id did = 0;
-    for (DOF::Id i = 0; i < model.ndof; i++){
-        if (model.is_dof_fixed(i)){
-            bcdm(i) = DOF::INVALID_ID;
-            continue;
-        }
-        bcdm(i) = did;
-        did++;
-    }
-
-    // Adjust NDM and EDM for BC (DOFs will now have shifted IDs or INVALID_ID)
-    model.ndm_bc.resize(model.ndm.rows(), model.ndm.cols());
-    model.edm_bc.resize(model.edm.rows(), model.edm.cols());
-
-    // Copy NDM to NDM_BC applying BCDM mapping
-    for (Node::Id nid = 0; nid < model.ndm_bc.rows(); nid++){
-        for (int i = 0; i < model.ndm_bc.cols(nid); i++)
-            model.ndm_bc(nid,i) = bcdm(model.ndm(nid,i));
-    }
-
-    // Copy EDM to EDM_BC applying BCDM mapping
-    for (Element::Id eid = 0; eid < model.edm_bc.rows(); eid++){
-        for (int i = 0; i < model.edm_bc.cols(eid); i++)
-            model.edm_bc(eid, i) = bcdm(model.edm(eid, i));
-    }
 
     return Status::SUCCESS;
 }
-
 
 // Create node DOF Signatures
 Status Model::createNDS(Model::Data& model)
@@ -185,6 +155,51 @@ Status Model::createEDM(Model::Data& model)
                 local_did++;
             }
         }
+    }
+
+    return Status::SUCCESS;
+}
+
+
+// Create mapping between original DOFs to new DOF Ids adjusted for presence of Dirichlet BC
+Status Model::createBCDM(Model::Data& model){
+    // Mapping to DOF ids taking into account BC
+    model.bcdm.resize(model.ndof);
+    DOF::Id did = 0;
+    for (DOF::Id i = 0; i < model.ndof; i++){
+        if (model.is_dof_fixed(i)){
+            model.bcdm(i) = DOF::INVALID_ID;
+            continue;
+        }
+        model.bcdm(i) = did;
+        did++;
+    }
+
+    return Status::SUCCESS;
+}
+
+// Create NDM adjusted for Dirichlet BC
+// DOF Ids are mapped to new ones. Fixed DOF Ids map to DOF::INVALID_ID
+Status Model::createAdjustedNDM(Model::Data& model){
+    model.ndm_bc.resize(model.ndm.rows(), model.ndm.cols());
+    // Copy NDM to NDM_BC applying BCDM mapping
+    for (Node::Id nid = 0; nid < model.ndm_bc.rows(); nid++){
+        for (int i = 0; i < model.ndm_bc.cols(nid); i++)
+            model.ndm_bc(nid, i) = model.bcdm(model.ndm(nid, i));
+    }
+
+    return Status::SUCCESS;
+}
+
+// EDM adjusted for Dirichlet BC
+// DOF Ids are mapped to new ones. Fixed DOF Ids map to DOF::INVALID_ID
+Status Model::createAdjustedEDM(Model::Data& model){
+    model.edm_bc.resize(model.edm.rows(), model.edm.cols());
+
+    // Copy EDM to EDM_BC applying BCDM mapping
+    for (Element::Id eid = 0; eid < model.edm_bc.rows(); eid++){
+        for (int i = 0; i < model.edm_bc.cols(eid); i++)
+            model.edm_bc(eid, i) = model.bcdm(model.edm(eid, i));
     }
 
     return Status::SUCCESS;
