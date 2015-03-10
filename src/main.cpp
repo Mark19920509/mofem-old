@@ -17,8 +17,6 @@
 #include <Solution/SolutionCreate.h>
 #include <CS/CS.h>
 
-#include <GUI/GUIContext.h>
-
 #include <FEM/FEMContext.h>
 #include <FEM/FEMCreate.h>
 
@@ -26,10 +24,6 @@ int main() {
 
     FEM::Context fem;
     FEM::init(fem);
-
-    GUI::Context gui;
-    GUI::init(gui, 800, 600, "mofem");
-    GUI::start(gui);
 
     // Material definitions
     Input::addMaterial(fem.input, Material::LINEAR_ELASTIC, { 1, 1 });
