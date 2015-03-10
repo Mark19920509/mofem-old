@@ -1,18 +1,37 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 3.1)
 PROJECT (mofem)
 
-# Version number
-SET (mofem_VERSION_MAJOR 0)
-SET (mofem_VERSION_MINOR 1)
+SET(EXECUTABLE_NAME mofem)
+SET (${EXECUTABLE_NAME}_VERSION_MAJOR 0)
+SET (${EXECUTABLE_NAME}_VERSION_MINOR 2)
+  
+# Sources
+INCLUDE(CMakeSrcs.txt)
 
-# Eigen include directory
-SET (EIGEN_DIR "" CACHE PATH "Eigen include path")
+# Find Boost
+# Make sure BOOST_ROOT environment variable is set
+FIND_PACKAGE(Boost 1.5.7 REQUIRED)
+IF(Boost_FOUND)
+  INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+ENDIF()
 
-# Boost include directory
-SET (BOOST_DIR "" CACHE PATH "Boost include path")
-    
-# Setup includes
-INCLUDE_DIRECTORIES(${EIGEN_DIR} ${BOOST_DIR})
+# Find SFML
+# Make sure SFML_ROOT environment variable is set
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(SFML 2 REQUIRED system window graphics)
+IF(SFML_FOUND)
+  INCLUDE_DIRECTORIES(${SFML_INCLUDE_DIR})
+ENDIF()
+
+# Find Eigen
+SET(EIGEN_ROOT $ENV{EIGEN_ROOT} CACHE PATH "Eigen root directory")
+INCLUDE_DIRECTORIES(${EIGEN_ROOT})
+
+# Find SFGUI
+SET(SFGUI_ROOT $ENV{SFGUI_ROOT} CACHE PATH "SFGUI root directory")
+INCLUDE_DIRECTORIES(${SFGUI_ROOT}/include)
+FIND_LIBRARY(SFGUI_LIBRARY sfgui ${SFGUI_ROOT}/lib)
+
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src)
 
 # Build types
@@ -22,82 +41,15 @@ SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Supported config typ
 # No install
 UNSET(CMAKE_INSTALL_PREFIX CACHE)
 
-# Source files
-SET(SRC_MAIN 
-    src/main.cpp)
-SET(SRC_CS 
-    src/CS/CS.h 
-    src/CS/CS.cpp)
-SET(SRC_DOF 
-    src/DOF/DOF.h 
-    src/DOF/DOF.cpp)
-SET(SRC_ELEMENT 
-    src/Element/Element.h 
-    src/Element/Element.cpp)
-SET(SRC_ELEMENT_TRUSS
-    src/Element/Truss/Truss.h 
-    src/Element/Truss/TrussLinear.cpp)
-SET(SRC_INPUT
-    src/Input/InputData.h 
-    src/Input/InputCreate.h 
-    src/Input/InputCreate.cpp)
-SET(SRC_MATERIAL
-    src/Material/Material.h 
-    src/Material/Material.cpp
-    src/Material/MaterialCalculate.h)
-SET(SRC_MATERIAL_LINEAR_ELASTIC
-    src/Material/LinearElastic/LinearElastic.h
-    src/Material/LinearElastic/LinearElastic.cpp)
-SET(SRC_MODEL
-    src/Model/ModelData.h
-    src/Model/ModelGatherScatter.h
-    src/Model/ModelGatherScatter.cpp
-    src/Model/ModelCreate.h
-    src/Model/ModelCreate.cpp)
-SET(SRC_NODE
-    src/Node/Node.h)
-SET(SRC_SOLUTION
-    src/Solution/SolutionData.h
-    src/Solution/SolutionCreate.h
-    src/Solution/SolutionCreate.cpp)
-SET(SRC_UTIL
-    src/Util/Array.h
-    src/Util/BoostEnumString.h
-    src/Util/CompileType.h
-    src/Util/Precision.h
-    src/Util/SparseArray.h
-    src/Util/Status.h)
-    
- SET(SRC_ALL
-     ${SRC_MAIN} 
-     ${SRC_CS}
-     ${SRC_DOF} 
-     ${SRC_ELEMENT}
-     ${SRC_ELEMENT_TRUSS}
-     ${SRC_INPUT}
-     ${SRC_MATERIAL}
-     ${SRC_MATERIAL_LINEAR_ELASTIC}
-     ${SRC_MODEL}
-     ${SRC_NODE}
-     ${SRC_SOLUTION}
-     ${SRC_UTIL})
-
 # Preproccessor 
 ADD_DEFINITIONS(-DEIGEN_DEFAULT_TO_ROW_MAJOR)
-    
-# Executable
-ADD_EXECUTABLE(mofem ${SRC_ALL})
 
-# Source groups
-SOURCE_GROUP("Source" FILES ${SRC_MAIN})
-SOURCE_GROUP("Source\\CS" FILES ${SRC_CS})
-SOURCE_GROUP("Source\\DOF" FILES ${SRC_DOF})
-SOURCE_GROUP("Source\\Element" FILES ${SRC_ELEMENT})
-SOURCE_GROUP("Source\\Element\\Truss" FILES ${SRC_ELEMENT_TRUSS})
-SOURCE_GROUP("Source\\Input" FILES ${SRC_INPUT})
-SOURCE_GROUP("Source\\Material" FILES ${SRC_MATERIAL})
-SOURCE_GROUP("Source\\Material\\Linear Elastic" FILES ${SRC_MATERIAL_LINEAR_ELASTIC})
-SOURCE_GROUP("Source\\Model" FILES ${SRC_MODEL})
-SOURCE_GROUP("Source\\Node" FILES ${SRC_NODE})
-SOURCE_GROUP("Source\\Solution" FILES ${SRC_SOLUTION})
-SOURCE_GROUP("Source\\Util" FILES ${SRC_UTIL})
+# Executable
+ADD_EXECUTABLE(${EXECUTABLE_NAME} ${SRC_ALL})
+
+# Link libraries
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
+TARGET_LINK_LIBRARIES(${EXECUTABLE_NAME} ${SFGUI_LIBRARY})
+
+# Source Groups
+INCLUDE(CMakeSrcGroups.txt)

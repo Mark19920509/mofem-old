@@ -1,0 +1,59 @@
+# Source files
+SET(SRC_MAIN 
+    src/main.cpp)
+SET(SRC_CS 
+    src/CS/CS.h 
+    src/CS/CS.cpp)
+SET(SRC_DOF 
+    src/DOF/DOF.h 
+    src/DOF/DOF.cpp)
+SET(SRC_ELEMENT 
+    src/Element/Element.h 
+    src/Element/Element.cpp)
+SET(SRC_ELEMENT_TRUSS
+    src/Element/Truss/Truss.h 
+    src/Element/Truss/TrussLinear.cpp)
+SET(SRC_INPUT
+    src/Input/InputData.h 
+    src/Input/InputCreate.h 
+    src/Input/InputCreate.cpp)
+SET(SRC_MATERIAL
+    src/Material/Material.h 
+    src/Material/Material.cpp
+    src/Material/MaterialCalculate.h)
+SET(SRC_MATERIAL_LINEAR_ELASTIC
+    src/Material/LinearElastic/LinearElastic.h
+    src/Material/LinearElastic/LinearElastic.cpp)
+SET(SRC_MODEL
+    src/Model/ModelData.h
+    src/Model/ModelGatherScatter.h
+    src/Model/ModelGatherScatter.cpp
+    src/Model/ModelCreate.h
+    src/Model/ModelCreate.cpp)
+SET(SRC_NODE
+    src/Node/Node.h)
+SET(SRC_SOLUTION
+    src/Solution/SolutionData.h
+    src/Solution/SolutionCreate.h
+    src/Solution/SolutionCreate.cpp)
+SET(SRC_UTIL
+    src/Util/Array.h
+    src/Util/BoostEnumString.h
+    src/Util/CompileType.h
+    src/Util/Precision.h
+    src/Util/SparseArray.h
+    src/Util/Status.h)
+    
+ SET(SRC_ALL
+     ${SRC_MAIN} 
+     ${SRC_CS}
+     ${SRC_DOF} 
+     ${SRC_ELEMENT}
+     ${SRC_ELEMENT_TRUSS}
+     ${SRC_INPUT}
+     ${SRC_MATERIAL}
+     ${SRC_MATERIAL_LINEAR_ELASTIC}
+     ${SRC_MODEL}
+     ${SRC_NODE}
+     ${SRC_SOLUTION}
+     ${SRC_UTIL})
