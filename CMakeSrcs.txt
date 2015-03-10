@@ -16,7 +16,9 @@ SET(SRC_ELEMENT_TRUSS
 SET(SRC_INPUT
     src/Input/InputData.h 
     src/Input/InputCreate.h 
-    src/Input/InputCreate.cpp)
+    src/Input/InputCreate.cpp
+    src/Input/InputLISA.h
+    src/Input/InputLISA.cpp)
 SET(SRC_MATERIAL
     src/Material/Material.h 
     src/Material/Material.cpp

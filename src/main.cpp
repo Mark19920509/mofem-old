@@ -20,10 +20,14 @@
 #include <FEM/FEMContext.h>
 #include <FEM/FEMCreate.h>
 
+#include <Input/InputLISA.h>
+
 int main() {
 
     FEM::Context fem;
     FEM::init(fem);
+
+    CHECK_STATUS(Input::LoadLISA(fem.input, "cube.liml"));
 
     // Material definitions
     Input::addMaterial(fem.input, Material::LINEAR_ELASTIC, { 1, 1 });

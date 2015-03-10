@@ -13,6 +13,9 @@ struct Status{
 
         (NOT_IMPLEMENTED)
 
+        (FILE_NOT_FOUND)
+        (FILE_NOT_PARSED)
+
         (DOF_INVALID_LONE)
 
         (NODE_INVALID_ID)
