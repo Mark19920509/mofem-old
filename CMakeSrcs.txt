@@ -42,7 +42,9 @@ SET(SRC_UTIL
     src/Util/CompileType.h
     src/Util/Precision.h
     src/Util/SparseArray.h
-    src/Util/Status.h)
+    src/Util/Status.h
+    src/Util/pugixml.hpp
+    src/Util/pugixml.cpp)
 SET(SRC_FEM
     src/FEM/FEMContext.h
     src/FEM/FEMCreate.h
