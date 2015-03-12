@@ -27,7 +27,7 @@ int main() {
     FEM::Context fem;
     FEM::init(fem);
 
-    CHECK_STATUS(Input::LoadLISA(fem.input, "cube.liml"));
+    CHECK_STATUS(Input::LoadLISA(fem.input, "test.liml"));
 
     // Material definitions
     Input::addMaterial(fem.input, Material::LINEAR_ELASTIC, { 1, 1 });

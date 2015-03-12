@@ -27,6 +27,9 @@ struct Status{
         (ELEMENT_INVALID_TYPE)
         (ELEMENT_INVALID_NUM_PARAMETERS)
         (ELEMENT_INVALID_NUM_NODES)
+
+        (LISA_MATERIAL_ERROR)
+        (LISA_GEOMETRY_ERROR)
         )
 
     Code code;
