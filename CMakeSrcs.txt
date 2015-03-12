@@ -68,4 +68,5 @@ SET(SRC_SOLVER
      ${SRC_NODE}
      ${SRC_SOLUTION}
      ${SRC_UTIL}
-     ${SRC_FEM})
+     ${SRC_FEM}
+     ${SRC_SOLVER}})
