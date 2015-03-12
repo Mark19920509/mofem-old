@@ -51,6 +51,9 @@ SET(SRC_FEM
     src/FEM/FEMContext.h
     src/FEM/FEMCreate.h
     src/FEM/FEMCreate.cpp)
+SET(SRC_SOLVER
+    src/Solver/CGS.h
+    src/Solver/CGS.cpp)
     
  SET(SRC_ALL
      ${SRC_MAIN} 
