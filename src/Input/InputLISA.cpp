@@ -77,8 +77,9 @@ Status Input::LoadLISA(Input::Data& input, std::string filepath){
         createElement(input, material_map, et);
     }
 
-    // Process Dirichlet BC
+    // Process BC
     createDirichletBC(input, liml8, node_groups);
+    createNeumannBC(input, liml8, node_groups);
 
     return Status::SUCCESS;
 }
@@ -193,7 +194,7 @@ Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et)
     vector<Node::Id> nodes;
     int start = 0;
     int len = 0;
-    for (int i = 0; i < nodes_str.size(); i++){
+    for (unsigned int i = 0; i < nodes_str.size(); i++){
         if (nodes_str[i] == ' '){
             if (len > 0){
                 nodes.push_back(std::stoi(nodes_str.substr(start, len)));
@@ -286,19 +287,44 @@ Status createDirichletBC(Input::Data& input, pugi::xml_node& liml8, NodeGroups& 
     return Status::SUCCESS;
 }
 
-
 Status createNeumannBC(Input::Data& input, pugi::xml_node& liml8, NodeGroups& node_groups){
     // Forces
     for (pugi::xml_node force : liml8.children("force")){
         string node_group_name = force.attribute("selection").value();
         auto node_group = node_groups[node_group_name];
-        numeric x = std::stod(force.child("x").text().get());
-        numeric y = std::stod(force.child("x").text().get());
-        numeric z = std::stod(force.child("x").text().get());
-        for (Node::Id nid : node_group){
-            std::cout << "NEUMANN BC " << nid << " " << x << " " << y << " " << z  << std::endl;
-            // TODO: Input::addNeumannBC(...)
+
+        vector<vector<Input::TimestepPair>> pairs(3);
+
+        // Find timestep pairs for this node group
+        DOF::Id dof_id = 0;
+        for (string dof_name : {"x", "y", "z"}){
+            for (pugi::xml_node dof : force.children(dof_name.c_str())){
+                numeric timestep;
+                if (dof.attribute("time").empty()) timestep = 0;
+                else timestep = std::stod(dof.attribute("time").value());
+                numeric val = std::stod(dof.text().get());
+                pairs[dof_id].push_back({timestep, val});
+            }
+            dof_id++;
         }
+
+        // Make sure timesteps are sorted by time
+        for (DOF::Id dof_id = 0; dof_id < 3; dof_id++){
+            std::sort(pairs[dof_id].begin(), pairs[dof_id].end(), [](Input::TimestepPair const &t1, Input::TimestepPair const &t2) { return t1.t < t2.t; });
+        }
+        
+        // Add neumann BC to each node in group
+        for (Node::Id nid : node_group){
+            for (DOF::Id dof_id = 0; dof_id < 3; dof_id++){
+                std::cout << "NEUMANN BC " << nid << " " << DOF::setStr(DOF::Lone(dof_id)) << std::endl;
+                for (auto tsp : pairs[dof_id]){
+                    std::cout << "\t" << tsp.t << " " << tsp.val << std::endl;
+                }
+                Input::addNeumannBC(input, nid, DOF::Lone(dof_id), pairs[dof_id]);
+            }
+        }
+
     }
 
+    return Status::SUCCESS;
 }
