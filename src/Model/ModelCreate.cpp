@@ -47,7 +47,7 @@ Status Model::setupMaterialData(Input::Data& input, Model::Data& model)
     return Status::SUCCESS;
 }
 
-Status Model::setupBC(Input::Data& input, Model::Data& model){
+Status Model::setupDirichletBC(Input::Data& input, Model::Data& model){
     model.ndof_fixed = 0;
     model.is_dof_fixed = Vector<char>::Zero(model.ndof);
     model.dof_value = Vector<numeric>::Zero(model.ndof);
@@ -70,6 +70,40 @@ Status Model::setupBC(Input::Data& input, Model::Data& model){
         }
     }
     model.ndof_solve = model.ndof - model.ndof_fixed;
+
+    return Status::SUCCESS;
+}
+
+Status Model::setupNeumannBC(Input::Data& input, Model::Data& model){
+    std::vector<int> timesteps_per_dof(model.ndof, 0);
+
+    // First pass to get correct size for tables
+    for (auto nbc : input.neumann_bc){
+        // Get local index of DOF for this node
+        int i = DOF::setIndexOf(model.nds(nbc.nid), nbc.dof);
+        if (i == DOF::INVALID_ID) continue;
+
+        // Get global DOF Id (doesn't take into account Dirichlet BC)
+        int did = model.ndm(nbc.nid, i);
+        timesteps_per_dof[did] = nbc.table.size();
+    }
+
+    // Construct tables
+    model.force_time.resize(model.ndof, timesteps_per_dof);
+    model.force_value.resize(model.ndof, timesteps_per_dof);
+
+    // Second pass, now copy values into tables
+    for (auto nbc : input.neumann_bc){
+        int i = DOF::setIndexOf(model.nds(nbc.nid), nbc.dof);
+        if (i == DOF::INVALID_ID) continue;
+        int did = model.ndm(nbc.nid, i);
+        int ts_id = 0;
+        for (auto tsp : nbc.table){
+            model.force_time(did, ts_id) = tsp.t;
+            model.force_value(did, ts_id) = tsp.val;
+            ts_id++;
+        }
+    }
 
     return Status::SUCCESS;
 }

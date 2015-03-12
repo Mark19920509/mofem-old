@@ -17,6 +17,12 @@ namespace Input
                           DOF::Lone dof,
                           numeric val);
 
+    // Neumann BC
+    Status addNeumannBC(Input::Data& input,
+                        Node::Id nid,
+                        DOF::Lone dof,
+                        std::vector<TimestepPair> table);
+
     // Element input handlers
     Status addElement(Input::Data& input,
                       Element::Type elem_type,

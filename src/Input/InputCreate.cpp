@@ -32,6 +32,17 @@ Status Input::addDirichletBC(Input::Data& input, Node::Id nid, DOF::Lone dof, nu
     return Status::SUCCESS;
 }
 
+Status Input::addNeumannBC(Input::Data& input, Node::Id nid, DOF::Lone dof, std::vector<TimestepPair> table){
+    if (nid >= (signed int)input.node_pos.size() || nid < 0)
+        return{ Status::NODE_INVALID_ID, "NodeID : " + to_string(nid) };
+
+    if (dof >= DOF::COUNT || dof < 0)
+        return{ Status::DOF_INVALID_LONE, "DOF : " + to_string(dof) };
+
+    input.neumann_bc.push_back({nid, dof, table});
+
+    return Status::SUCCESS;
+}
 
 Status Input::addElement(Input::Data& input, Element::Type elem_type, Material::Id mat_id, vector<numeric> elem_param, vector<Node::Id> node_ids)
 {

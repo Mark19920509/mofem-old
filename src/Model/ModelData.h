@@ -14,9 +14,13 @@ namespace Model
         MatrixF<numeric, Dynamic, 3> node_pos;   // Node positions
         MatrixF<numeric, Dynamic, 9> node_cs;    // Node coordinate systems
 
-        // DOF Data
+        // Dirichlet DOF data
         Vector<char> is_dof_fixed;
         Vector<numeric> dof_value;
+
+        // Neumann DOF data
+        ArrayVC<numeric> force_time;        // Time-steps for every DOF
+        ArrayVC<numeric> force_value;       // Value at each time-step
 
         // Element data
         Array<Element::Id> elem_group_offset;   // Starting position of every element group (elements are stored in type groups)

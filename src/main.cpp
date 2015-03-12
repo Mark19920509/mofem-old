@@ -49,6 +49,9 @@ int main() {
     Input::addDirichletBC(fem.input, 3, DOF::Y, 0);
     Input::addDirichletBC(fem.input, 4, DOF::Y, 0);
 
+    Input::addNeumannBC(fem.input, 0, DOF::X, { { 0, 0 }, { 1, 2 }, {2, 0} });
+    Input::addNeumannBC(fem.input, 1, DOF::X, { { 0, -1 }, { 1, 1 } });
+
     FEM::prepareModel(fem);
 
     FEM::prepareSolution(fem);
