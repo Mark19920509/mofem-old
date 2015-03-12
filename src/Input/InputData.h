@@ -12,6 +12,17 @@
 namespace Input
 {
 
+    struct TimestepPair{
+        numeric t;
+        numeric val;
+    };
+
+    struct NeumannBC{
+        Node::Id nid;
+        DOF::Lone dof;
+        std::vector<TimestepPair> table;
+    };
+
     using DirichletBC = std::tuple<Node::Id, DOF::Lone, numeric>;
 
     struct Data
@@ -20,8 +31,11 @@ namespace Input
         std::vector<std::array<numeric, 3>> node_pos;
         std::vector<std::array<numeric, 9>> node_cs;
 
-        // Dirichlet DOF Data
+        // Dirichlet BC data
         std::vector<DirichletBC> dirichlet_bc;
+
+        // Neumann BC data
+        std::vector<NeumannBC> neumann_bc;
 
         // Element data
         std::vector<Element::Type> elem_type;

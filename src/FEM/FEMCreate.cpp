@@ -26,7 +26,8 @@ Status FEM::prepareModel(Context& fem){
 
     // Setup BC Data - this needs to be done after DOF maps are created as we need to know 
     // how many DOFs there are
-    CHECK_STATUS( Model::setupBC(fem.input, fem.model) );
+    CHECK_STATUS( Model::setupDirichletBC(fem.input, fem.model) );
+    CHECK_STATUS( Model::setupNeumannBC(fem.input, fem.model) );
 
     // Create the adjusted DOF maps which take into account presence of Dirichlet BC
     CHECK_STATUS( Model::createBCDM(fem.model) );
