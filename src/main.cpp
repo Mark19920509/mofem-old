@@ -56,10 +56,17 @@ int main() {
     FEM::prepareModel(fem);
     FEM::prepareSolution(fem);
 
+    std::cout << std::to_string(fem.model.force_time) << std::endl;
+    std::cout << std::to_string(fem.model.force_value) << std::endl;
+
+    Solution::assembleExtForce(fem.model, fem.solution, 3);
+
+    std::cout << fem.solution.f_ext << std::endl;
+
     Element::FlagVector flags;
     flags[Element::CALC_INT_FORCE] = true;
     flags[Element::CALC_STIFF_LINEAR] = true;
-    Solution::assemble(fem.model, fem.solution, flags);
+    Solution::assembleElements(fem.model, fem.solution, flags);
 
     return 0;
 }

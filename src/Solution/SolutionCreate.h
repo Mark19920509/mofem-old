@@ -7,6 +7,7 @@
 namespace Solution{
     Status allocateMemory(Model::Data const& model, Solution::Data& sol);
 
-    Status assemble(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags);
+    Status assembleElements(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags);
+    Status assembleExtForce(Model::Data const& model, Solution::Data& sol, numeric t);
 
 }

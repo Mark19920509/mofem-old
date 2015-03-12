@@ -40,12 +40,72 @@ Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
     return Status::SUCCESS;
 }
 
-Status Solution::assemble(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags){
+Status Solution::assembleElements(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags){
     sol.k_e *= 0;
     sol.f_dbc.fill(0);
     sol.f_int.fill(0);
 
     Element::Truss::Linear::calculate(model, sol, flags);
+
+    return Status::SUCCESS;
+}
+
+Status Solution::assembleExtForce(Model::Data const& model, Solution::Data& sol, numeric t){
+    auto& table_time = model.force_time;
+    auto& table_value = model.force_value;
+    auto& f_ext = sol.f_ext;
+
+    // Interpolation variables
+    numeric start_val; 
+    numeric end_val;
+    numeric start_time; 
+    numeric end_time;
+    numeric lambda;
+
+    int ncols;
+    DOF::Id post_dbc_did;
+    for (DOF::Id did = 0; did < model.ndof; did++){
+        ncols = table_time.cols(did);
+        post_dbc_did = model.bcdm(did);
+
+        // This DOF has a Dirichlet BC on it
+        if (post_dbc_did == DOF::INVALID_ID) continue;
+
+        // No force
+        if (ncols == 0){
+            f_ext(post_dbc_did) = 0;
+            continue;
+        }
+
+        // Single value
+        if (ncols == 1){
+            f_ext(post_dbc_did) = table_value(did, 0);
+            continue;
+        }
+
+        // Multiple values, interpolate linearly
+        int start_idx = 0;
+        int end_idx = 0;
+        for (int i = 0; i < ncols; i++){
+            if (t >= table_time(did, i)){
+                start_idx = i;
+                end_idx = i;
+            }
+            else if (t < table_time(did, i)){
+                end_idx = i;
+                break;
+            }
+        }
+
+        // Interpolate 
+        start_val = table_value(did, start_idx); 
+        end_val = table_value(did, end_idx);
+        start_time = table_time(did, start_idx);
+        end_time = table_time(did, end_idx);
+        if (start_time == end_time) lambda = 0.5;
+        else lambda = (t-start_time)/(end_time-start_time);
+        f_ext(post_dbc_did) = (1 - lambda) * start_val + lambda * end_val;
+    }
 
     return Status::SUCCESS;
 }
