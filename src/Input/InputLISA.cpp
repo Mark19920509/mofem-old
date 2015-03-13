@@ -69,12 +69,12 @@ Status Input::LoadLISA(Input::Data& input, std::string filepath){
 
     // Process materials
     for (MaterialTuple mt : material_tuples){
-        createMaterial(input, mt);
+        CHECK_STATUS(createMaterial(input, mt));
     }
 
     // Process elements
     for (ElementTuple& et : element_tuples){
-        createElement(input, material_map, et);
+        CHECK_STATUS(createElement(input, material_map, et));
     }
 
     // Process BC
@@ -156,7 +156,7 @@ Status createMaterial(Input::Data& input, MaterialTuple& mt){
     if (!mech.empty()){
         string mat_type = mech.attribute("type").value();
         if (mat_type == "Isotropic"){
-            createLinearElastic(input, mt);
+            return createLinearElastic(input, mt);
         }
     }
 
@@ -197,7 +197,7 @@ Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et)
     for (unsigned int i = 0; i < nodes_str.size(); i++){
         if (nodes_str[i] == ' '){
             if (len > 0){
-                nodes.push_back(std::stoi(nodes_str.substr(start, len)));
+                nodes.push_back(std::stoi(nodes_str.substr(start, len)) - 1);
             }
             start = i + 1;
             len = 0;
@@ -206,14 +206,14 @@ Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et)
         }
     } 
     if (len > 0){
-        nodes.push_back(std::stoi(nodes_str.substr(start, len)));
+        nodes.push_back(std::stoi(nodes_str.substr(start, len)) - 1);
     }
 
     if (elem_shape == "line2"){
         if (elem.attribute("truss").empty()){
-            // Beam
+            return { Status::NOT_IMPLEMENTED, "Beam element not available" };
         }else{
-            createTruss(input, mat_map, et, nodes);
+           return createTruss(input, mat_map, et, nodes);
         }
     }
 
@@ -252,9 +252,7 @@ Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, v
 
     // Add truss
     std::cout << "ELEM TRUSS_LINEAR " << mid << " " << A << " " << std::to_string(nodes);
-    Input::addElement(input, Element::TRUSS_LINEAR, mid, {A}, nodes);
-
-    return Status::SUCCESS;
+    return Input::addElement(input, Element::TRUSS_LINEAR, mid, {A}, nodes);
 }
 
 
@@ -264,6 +262,8 @@ Status processGeometric1D(pugi::xml_node geo, numeric& area){
     if (geo_type == "CircularBar"){
         numeric d = std::stod(geo.attribute("roundod").value());
         area = M_PI*d*d / 4.0;
+    }else if (geo_type == "UniformGeneralSection"){
+        area = std::stod(geo.attribute("area").value());
     }else{
         return{ Status::LISA_GEOMETRY_ERROR, "Unknown geometry type " + geo_type };
     }
