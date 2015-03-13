@@ -30,7 +30,7 @@ int main() {
     FEM::Context fem;
     FEM::init(fem);
 
-    std::string filepath = "truss.liml";
+    std::string filepath = "space_struct.liml";
 
     CHECK_STATUS(Input::LoadLISA(fem.input, filepath));
 
@@ -47,6 +47,8 @@ int main() {
 
     Vector<numeric> u(fem.model.ndof_solve);
     Solver::ConjugateGradient(fem.solution.k_e, fem.solution.f_ext, fem.solution.u);
+
+    std::cout << fem.solution.k_e << std::endl;
 
     Output::WriteLISA(fem.model, fem.solution, filepath);
 

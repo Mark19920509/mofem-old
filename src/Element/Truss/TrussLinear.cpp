@@ -2,6 +2,7 @@
 
 using namespace Element::Truss::Linear;
 
+
 namespace Element{
     namespace Truss{
         namespace Linear{
@@ -20,13 +21,13 @@ namespace Element{
                 Node::Pos nodeA;            // Node positions
                 Node::Pos nodeB;
 
-                VectorF<numeric, 4> u;      // Displacement vector
-                auto u1 = u.head(2);        // Displacement of first node
-                auto u2 = u.tail(2);        //                 second node
+                VectorF<numeric, 6> u;      // Displacement vector
+                auto u1 = u.head(3);        // Displacement of first node
+                auto u2 = u.tail(3);        //                 second node
 
                 // Difference between node positions
-                VectorF<numeric, 2> diff_ref;
-                VectorF<numeric, 2> diff_act;
+                VectorF<numeric, 3> diff_ref;
+                VectorF<numeric, 3> diff_act;
 
                 Material::Id mat_id;    // Material Id
                 numeric A;              // Truss area
@@ -38,15 +39,15 @@ namespace Element{
                 numeric C_11;           // Tangent
 
                 Vector<numeric> fint_local(2);      // Internal force in local CS
-                Vector<numeric> fint_global(4);     // Internal force in global CS
+                Vector<numeric> fint_global(6);     // Internal force in global CS
 
-                VectorF<numeric, 2> local_cs;       // Local CS
-                MatrixF<numeric, 2, 1> T_node;      // Transformation from local to global CS @ node
-                MatrixF<numeric, 4, 2> T;           // Complete transformation matrix
+                VectorF<numeric, 3> local_cs;       // Local CS
+                MatrixF<numeric, 3, 1> T_node;      // Transformation from local to global CS @ node
+                MatrixF<numeric, 6, 2> T;           // Complete transformation matrix
                 T.fill(0);
 
                 MatrixF<numeric, 2, 2> ke_local;    // Material Stiffness matrix
-                MatrixF<numeric, 4, 4> ke_global;   
+                MatrixF<numeric, 6, 6> ke_global;   
 
                 for (Element::Id eid = first_eid; eid < last_eid; eid++){
                     // Nodes
@@ -58,7 +59,7 @@ namespace Element{
                     Model::gatherElementDOF(model, eid, sol.u, u);
 
                     // Reference length
-                    diff_ref = (model.node_pos.row(nidB) - model.node_pos.row(nidA)).head(2);
+                    diff_ref = model.node_pos.row(nidB) - model.node_pos.row(nidA);
                     L_ref = diff_ref.norm();
 
                     // Current length
@@ -76,19 +77,19 @@ namespace Element{
                     Material::calculate1D(model, mat_id, eps_11, sig_11, C_11);
 
                     // Local to global transformation @ node
-                    CS::calcTransform(local_cs, CS::global_basis_2D, T_node);
+                    CS::calcTransform(local_cs, CS::global_basis_3D, T_node);
 
                     // Complete transformation matrix
-                    T.block<2, 1>(0, 0) = T_node;
-                    T.block<2, 1>(2, 1) = T_node;
+                    T.block<3, 1>(0, 0) = T_node;
+                    T.block<3, 1>(3, 1) = T_node;
 
                     // Calculate internal force
                     if (flags[Element::CALC_INT_FORCE]){
                         fint_local(0) = -sig_11*A;
                         fint_local(1) =  sig_11*A;
 
-                        fint_global.head(2) = T_node*fint_local(0);
-                        fint_global.tail(2) = T_node*fint_local(1);
+                        fint_global.head(3) = T_node*fint_local(0);
+                        fint_global.tail(3) = T_node*fint_local(1);
 
                         // Scatter
                         Model::scatterForce(model, eid, fint_global, sol.f_int);

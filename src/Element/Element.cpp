@@ -13,8 +13,8 @@ Status Element::defineTypes()
 
     // Node DOF sets
     type_data.dof_sets.resize(TYPE_COUNT, type_data.num_nodes);
-    type_data.dof_sets(TRUSS_LINEAR, 0) = DOF::setCreate(DOF::X, DOF::Y);
-    type_data.dof_sets(TRUSS_LINEAR, 1) = DOF::setCreate(DOF::X, DOF::Y);
+    type_data.dof_sets(TRUSS_LINEAR, 0) = DOF::setCreate(DOF::X, DOF::Y, DOF::Z);
+    type_data.dof_sets(TRUSS_LINEAR, 1) = DOF::setCreate(DOF::X, DOF::Y, DOF::Z);
 
     // Number of parameters
     type_data.num_params.resize(TYPE_COUNT);
