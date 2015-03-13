@@ -21,6 +21,7 @@
 #include <FEM/FEMCreate.h>
 
 #include <Input/InputLISA.h>
+#include <Output/OutputLISA.h>
 
 #include <Solver/CGS.h>
 
@@ -29,7 +30,9 @@ int main() {
     FEM::Context fem;
     FEM::init(fem);
 
-    CHECK_STATUS(Input::LoadLISA(fem.input, "truss.liml"));
+    std::string filepath = "truss.liml";
+
+    CHECK_STATUS(Input::LoadLISA(fem.input, filepath));
 
     FEM::prepareModel(fem);
     FEM::prepareSolution(fem);
@@ -42,14 +45,10 @@ int main() {
     flags[Element::CALC_STIFF_LINEAR] = true;
     Solution::assembleElements(fem.model, fem.solution, flags);
 
-    std::cout << "F_int = " << fem.solution.f_int.transpose() << std::endl;
-    std::cout << "F_ext = " << fem.solution.f_ext.transpose() << std::endl;
-    std::cout << "K_e = \n" << fem.solution.k_e.toDense() << std::endl;
-
     Vector<numeric> u(fem.model.ndof_solve);
-    Solver::ConjugateGradient(fem.solution.k_e, fem.solution.f_ext, u);
-    std::cout << "u = " << u << std::endl;
+    Solver::ConjugateGradient(fem.solution.k_e, fem.solution.f_ext, fem.solution.u);
 
+    Output::WriteLISA(fem.model, fem.solution, filepath);
 
     return 0;
 }

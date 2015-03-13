@@ -58,12 +58,12 @@ namespace Model{
         return Status::SUCCESS;
     }
 
-    /** Gathers displacements from global displacement vector
+    /** Gathers displacements from global displacement vector for a given element
      *  Takes into account existence of Dirichlet BC. If displacement is not found in the solution vector
      *  the required value is taken from the set value provided in the model. 
      */
     template<typename D1, typename D2>
-    Status gatherDisplacement(Model::Data const& model, Element::Id eid, Eigen::MatrixBase<D1> const& global_u, Eigen::MatrixBase<D2>& local_u){
+    Status gatherElementDOF(Model::Data const& model, Element::Id eid, Eigen::MatrixBase<D1> const& global_u, Eigen::MatrixBase<D2>& local_u){
         int ndof = model.edm_bc.cols(eid);
 
         assert(local_u.rows() == ndof);
@@ -74,6 +74,28 @@ namespace Model{
 
             if (mapped_i == DOF::INVALID_ID)
                 local_u(i) = model.dof_value(model.edm(eid, i));
+            else
+                local_u(i) = global_u(mapped_i);
+        }
+        return Status::SUCCESS;
+    }
+
+    /** Gathers displacements from global displacement vector for a given node
+    *  Takes into account existence of Dirichlet BC. If displacement is not found in the solution vector
+    *  the required value is taken from the set value provided in the model.
+    */
+    template<typename D1, typename D2>
+    Status gatherNodeDOF(Model::Data const& model, Node::Id nid, Eigen::MatrixBase<D1> const& global_u, Eigen::MatrixBase<D2>& local_u){
+        int ndof = DOF::setSize(model.nds(nid));
+
+        assert(local_u.rows() >= ndof);
+
+        DOF::Id mapped_i;
+        for (int i = 0; i < ndof; i++){
+            mapped_i = model.ndm_bc(nid, i);
+
+            if (mapped_i == DOF::INVALID_ID)
+                local_u(i) = model.dof_value(model.ndm(nid, i));
             else
                 local_u(i) = global_u(mapped_i);
         }

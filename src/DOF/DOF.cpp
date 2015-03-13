@@ -24,6 +24,9 @@ int DOF::setContains(Set S, Lone D){
 
 int DOF::setIndexOf(Set S, Lone D){
     int index = DOF::INVALID_ID;
+
+    if (!setContains(S, D)) return DOF::INVALID_ID;
+
     for (int d = 0; d < COUNT; d++){
         if (setContains(S, (Lone)d)){
             index++;

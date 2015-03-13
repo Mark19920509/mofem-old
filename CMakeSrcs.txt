@@ -19,6 +19,9 @@ SET(SRC_INPUT
     src/Input/InputCreate.cpp
     src/Input/InputLISA.h
     src/Input/InputLISA.cpp)
+SET(SRC_OUTPUT
+    src/Output/OutputLISA.h
+    src/Output/OutputLISA.cpp)
 SET(SRC_MATERIAL
     src/Material/Material.h 
     src/Material/Material.cpp
@@ -62,6 +65,7 @@ SET(SRC_SOLVER
      ${SRC_ELEMENT}
      ${SRC_ELEMENT_TRUSS}
      ${SRC_INPUT}
+     ${SRC_OUTPUT}
      ${SRC_MATERIAL}
      ${SRC_MATERIAL_LINEAR_ELASTIC}
      ${SRC_MODEL}

@@ -55,7 +55,7 @@ namespace Element{
 
                     // Gather displacements
                     // Note:  u1 and u2 are "pointers" to u, so they don't need to be updated
-                    Model::gatherDisplacement(model, eid, sol.u, u);
+                    Model::gatherElementDOF(model, eid, sol.u, u);
 
                     // Reference length
                     diff_ref = (model.node_pos.row(nidB) - model.node_pos.row(nidA)).head(2);
