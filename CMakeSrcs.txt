@@ -57,6 +57,9 @@ SET(SRC_FEM
 SET(SRC_SOLVER
     src/Solver/CGS.h
     src/Solver/CGS.cpp)
+SET(SRC_CONTROL
+    src/Control/StaticLinear.h
+    src/Control/StaticLinear.cpp)
     
  SET(SRC_ALL
      ${SRC_MAIN} 
@@ -73,4 +76,5 @@ SET(SRC_SOLVER
      ${SRC_SOLUTION}
      ${SRC_UTIL}
      ${SRC_FEM}
-     ${SRC_SOLVER})
+     ${SRC_SOLVER}
+     ${SRC_CONTROL})
