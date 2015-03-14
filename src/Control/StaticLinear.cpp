@@ -20,4 +20,5 @@ Status StaticLinear::run(FEM::Context& fem){
 
     Solver::ConjugateGradient(fem.solution.k_e, fem.solution.f_ext, fem.solution.u);
 
+    return Status::SUCCESS;
 }
