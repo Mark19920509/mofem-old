@@ -9,9 +9,12 @@ using std::string;
 Status createEmptyNodes(Model::Data const& model, pugi::xml_node& liml8);
 Status fillNodeDisplacements(Model::Data const& model, Solution::Data const& sol, pugi::xml_node& liml8);
 
-Status Output::WriteLISA(Model::Data const& model, Solution::Data const& sol, std::string filepath){
+Status Output::OpenLISA(std::string filepath, Output::File& out){
 
-    pugi::xml_document xml;
+    // Setup XML file
+    out.filepath = filepath;
+    out.file.xml = new pugi::xml_document;
+    pugi::xml_document& xml = *out.file.xml;
 
     // Try open file
     auto result = xml.load_file(filepath.c_str());
@@ -20,26 +23,41 @@ Status Output::WriteLISA(Model::Data const& model, Solution::Data const& sol, st
     if (result.status != pugi::status_ok)
         return Status(Status::FILE_NOT_PARSED, "Could not parse XML file " + filepath);
 
-    // Find parent element
-    auto liml8 = xml.child("liml8");
+    // LIML8 is the parent element
+    pugi::xml_node liml8 = xml.child("liml8");
 
-    // Remove old solution, make new one
+    // Remove old solution to make way for the new one below
     xml.child("liml8").remove_child("solution");
 
-    // Make new solution tree
+    // The solution node contains all information that appears under the parent element, for some
+    // reason. Here we copy everything from the parent element down to the solution subtree.
     pugi::xml_document temp;
     for (auto child : xml.child("liml8").children())
         temp.append_copy(child);
     xml.child("liml8").append_child("solution");
     for (auto child : temp.children())
         xml.child("liml8").child("solution").append_copy(child);
-    pugi::xml_node results = liml8.child("solution").append_child("results");
 
+    return Status::SUCCESS;
+}
+
+Status Output::WriteTimestepLISA(Model::Data const& model, Solution::Data const& sol, numeric t, Output::File& out){
+    // Get the xml file and parent element
+    pugi::xml_document& xml = *out.file.xml;
+    pugi::xml_node liml8 = xml.child("liml8");
+
+    pugi::xml_node results = liml8.child("solution").append_child("results");
 
     createEmptyNodes(model, results);
     fillNodeDisplacements(model, sol, results);
 
-    xml.save_file(filepath.c_str(), "  ");
+    return Status::SUCCESS;
+}
+
+Status Output::CloseLISA(Output::File& out){
+    pugi::xml_document& xml = *out.file.xml;
+    xml.save_file(out.filepath.c_str(), "  ");
+    delete out.file.xml;
 
     return Status::SUCCESS;
 }

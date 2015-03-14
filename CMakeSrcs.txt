@@ -20,6 +20,7 @@ SET(SRC_INPUT
     src/Input/InputLISA.h
     src/Input/InputLISA.cpp)
 SET(SRC_OUTPUT
+    src/Output/Output.h
     src/Output/OutputLISA.h
     src/Output/OutputLISA.cpp)
 SET(SRC_MATERIAL

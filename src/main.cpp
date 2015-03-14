@@ -16,9 +16,10 @@ int main() {
 
     CHECK_STATUS(Input::LoadLISA(fem.input, filepath));
 
-    Control::StaticLinear::run(fem);
-
-    Output::WriteLISA(fem.model, fem.solution, filepath);
+    Output::File out_file;
+    Output::OpenLISA(filepath, out_file);
+    Control::StaticLinear::run(fem, Output::WriteTimestepLISA, out_file);
+    Output::CloseLISA(out_file);
 
     return 0;
 }
