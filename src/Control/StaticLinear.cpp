@@ -6,7 +6,7 @@
 
 using namespace Control;
 
-Status StaticLinear::run(FEM::Context& fem){
+Status StaticLinear::run(FEM::Context& fem, Output::WriteTimestepFunc write_ts, Output::File file){
     FEM::prepareModel(fem);
     FEM::prepareSolution(fem);
 
@@ -21,6 +21,8 @@ Status StaticLinear::run(FEM::Context& fem){
     Solver::ConjugateGradient(fem.solution.mat[Solution::STIFF_LINEAR], 
                               fem.solution.vec[Solution::F_EXT], 
                               fem.solution.vec[Solution::DISP]);
+
+    write_ts(fem.model, fem.solution, 0, file);
 
     return Status::SUCCESS;
 }
