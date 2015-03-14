@@ -19,6 +19,8 @@ namespace Model{
         assert(local_k.rows() == ndof);
         assert(local_k.cols() == ndof);
 
+        auto f_dbc = sol.vec[Solution::F_DBC];
+
         DOF::Id mapped_i;
         DOF::Id mapped_j;
         for (int i = 0; i < ndof; i++){
@@ -30,7 +32,7 @@ namespace Model{
                 // Check if DOF is fixed. If it is, move it to RHS vector
                 mapped_j = model.edm_bc(eid, j);
                 if (mapped_j == DOF::INVALID_ID){
-                    sol.f_dbc(mapped_i) -= local_k(i, j)*model.dof_value(model.edm(eid,j));
+                    f_dbc(mapped_i) -= local_k(i, j)*model.dof_value(model.edm(eid,j));
                     continue;
                 }
 

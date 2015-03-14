@@ -10,7 +10,7 @@ Status StaticLinear::run(FEM::Context& fem){
     FEM::prepareModel(fem);
     FEM::prepareSolution(fem);
 
-    fem.solution.u.fill(0);
+    fem.solution.vec[Solution::DISP].fill(0);
 
     Solution::assembleExtForce(fem.model, fem.solution, 3);
 
@@ -18,7 +18,9 @@ Status StaticLinear::run(FEM::Context& fem){
     flags[Element::CALC_STIFF_LINEAR] = true;
     Solution::assembleElements(fem.model, fem.solution, flags);
 
-    Solver::ConjugateGradient(fem.solution.k_e, fem.solution.f_ext, fem.solution.u);
+    Solver::ConjugateGradient(fem.solution.mat[Solution::STIFF_LINEAR], 
+                              fem.solution.vec[Solution::F_EXT], 
+                              fem.solution.vec[Solution::DISP]);
 
     return Status::SUCCESS;
 }

@@ -28,7 +28,7 @@ Status Input::addDirichletBC(Input::Data& input, Node::Id nid, DOF::Lone dof, nu
     if (dof >= DOF::COUNT || dof < 0)
         return{ Status::DOF_INVALID_LONE, "DOF : " + to_string(dof) };
 
-    input.dirichlet_bc.push_back(DirichletBC(nid, dof, val));
+    input.dirichlet_bc.push_back(DirichletBC{nid, dof, val});
     return Status::SUCCESS;
 }
 

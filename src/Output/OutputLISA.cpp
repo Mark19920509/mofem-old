@@ -70,7 +70,7 @@ Status fillNodeDisplacements(Model::Data const& model, Solution::Data const& sol
         nds = model.nds(nid);
 
         // Gather displacements into u
-        Model::gatherNodeDOF(model, nid, sol.u, u);
+        Model::gatherNodeDOF(model, nid, sol.vec[Solution::DISP], u);
 
         // Go through every available DOF and fill in the correct value by
         // checking against the NDS

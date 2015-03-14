@@ -53,9 +53,9 @@ Status Model::setupDirichletBC(Input::Data& input, Model::Data& model){
     model.dof_value = Vector<numeric>::Zero(model.ndof);
 
     for (Input::DirichletBC bc : input.dirichlet_bc){
-        Node::Id nid = std::get<0>(bc);
-        DOF::Lone dof = std::get<1>(bc);
-        numeric val = std::get<2>(bc);
+        Node::Id nid = bc.nid;
+        DOF::Lone dof = bc.dof;
+        numeric val = bc.val;
 
         if (DOF::setContains(model.nds(nid), dof)){
             int i = DOF::setIndexOf(model.nds(nid), dof);

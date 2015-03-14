@@ -56,7 +56,7 @@ namespace Element{
 
                     // Gather displacements
                     // Note:  u1 and u2 are "pointers" to u, so they don't need to be updated
-                    Model::gatherElementDOF(model, eid, sol.u, u);
+                    Model::gatherElementDOF(model, eid, sol.vec[Solution::DISP], u);
 
                     // Reference length
                     diff_ref = model.node_pos.row(nidB) - model.node_pos.row(nidA);
@@ -92,7 +92,7 @@ namespace Element{
                         fint_global.tail(3) = T_node*fint_local(1);
 
                         // Scatter
-                        Model::scatterForce(model, eid, fint_global, sol.f_int);
+                        Model::scatterForce(model, eid, fint_global, sol.vec[Solution::F_INT]);
                     }
 
                     // Calculate linear stiffness
@@ -102,7 +102,7 @@ namespace Element{
                         ke_global = T*ke_local*T.transpose();
 
                         // Scatter
-                        Model::scatterStiffness(model, sol, eid, ke_global, sol.k_e);
+                        Model::scatterStiffness(model, sol, eid, ke_global, sol.mat[Solution::STIFF_LINEAR]);
                     }
 
                 }

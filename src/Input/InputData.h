@@ -23,7 +23,11 @@ namespace Input
         std::vector<TimestepPair> table;
     };
 
-    using DirichletBC = std::tuple<Node::Id, DOF::Lone, numeric>;
+    struct DirichletBC{
+        Node::Id nid;
+        DOF::Lone dof;
+        numeric val;
+    };
 
     struct Data
     {

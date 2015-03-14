@@ -7,13 +7,10 @@ Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
 
     Element::Count nelem = model.elem_ids.rows();
 
-    // Setup vectors
-    sol.u.resize(model.ndof_solve);
-    sol.v.resize(model.ndof_solve);
-    sol.a.resize(model.ndof_solve);
-    sol.f_int.resize(model.ndof_solve);
-    sol.f_ext.resize(model.ndof_solve);
-    sol.f_dbc.resize(model.ndof_solve);
+    // Setup vector sizes
+    for (int i = 0; i < VEC_COUNT; i++){
+        sol.vec[i].resize(model.ndof_solve);
+    }
 
     // Create sparse matrix structure
     DOF::Id mapped_i;
@@ -33,17 +30,19 @@ Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
     }
 
     // Setup matrices
-    sol.k_e.resize(model.ndof_solve, model.ndof_solve);
-    sol.k_e.reserve(triplets.size());
-    sol.k_e.setFromTriplets(triplets.begin(), triplets.end());
+    for (int i = 0; i < MAT_COUNT; i++){
+        sol.mat[i].resize(model.ndof_solve, model.ndof_solve);
+        sol.mat[i].reserve(triplets.size());
+        sol.mat[i].setFromTriplets(triplets.begin(), triplets.end());
+    }
 
     return Status::SUCCESS;
 }
 
 Status Solution::assembleElements(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags){
-    sol.k_e *= 0;
-    sol.f_dbc.fill(0);
-    sol.f_int.fill(0);
+    sol.mat[STIFF_LINEAR] *= 0;
+    sol.vec[F_DBC].fill(0);
+    sol.vec[F_INT].fill(0);
 
     Element::Truss::Linear::calculate(model, sol, flags);
 
@@ -53,7 +52,7 @@ Status Solution::assembleElements(Model::Data const& model, Solution::Data& sol,
 Status Solution::assembleExtForce(Model::Data const& model, Solution::Data& sol, numeric t){
     auto& table_time = model.force_time;
     auto& table_value = model.force_value;
-    auto& f_ext = sol.f_ext;
+    auto& f_ext = sol.vec[F_EXT];
 
     // Interpolation variables
     numeric start_val; 

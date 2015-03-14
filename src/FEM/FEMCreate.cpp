@@ -37,8 +37,8 @@ Status FEM::prepareModel(Context& fem){
     return Status::SUCCESS;
 }
 
-Status FEM::prepareSolution(Context& fem){
-    CHECK_STATUS( Solution::allocateMemory(fem.model, fem.solution) );
+Status FEM::prepareSolution(Context& context){
+    CHECK_STATUS( Solution::allocateMemory(context.model, context.solution) );
 
     return Status::SUCCESS;
 }
