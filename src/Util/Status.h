@@ -28,6 +28,8 @@ struct Status{
         (ELEMENT_INVALID_NUM_PARAMETERS)
         (ELEMENT_INVALID_NUM_NODES)
 
+        (CONTROL_INVALID_TYPE)
+
         (LISA_MATERIAL_ERROR)
         (LISA_GEOMETRY_ERROR)
         )

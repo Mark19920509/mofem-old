@@ -77,6 +77,14 @@ Status Input::addMaterial(Input::Data& input, Material::Type mat_type, vector<nu
     return Status::SUCCESS;
 }
 
+Status Input::setControl(Input::Data& input, Control::Type control_type, std::vector<numeric> control_param){
+    if (control_type >= Control::TYPE_COUNT || control_type < 0) return{ Status::CONTROL_INVALID_TYPE,  "Invalid control type." };
+
+    input.control_type = control_type;
+    input.control_param = control_param;
+
+    return Status::SUCCESS;
+}
 
 // Checks if given nodes are valid
 Status checkIfValidNodeIDs(Node::Count num_nodes, vector<Node::Id>& node_ids)

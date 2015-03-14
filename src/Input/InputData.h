@@ -4,6 +4,7 @@
 #include <Node/Node.h>
 #include <Element/Element.h>
 #include <Material/Material.h>
+#include <Control/Control.h>
 
 #include <vector>
 #include <array>
@@ -50,6 +51,10 @@ namespace Input
         // Material data
         std::vector<Material::Type> mat_type;
         std::vector<std::vector<numeric>> mat_param;
+
+        // How to solve the problem
+        Control::Type control_type;
+        std::vector<numeric> control_param;
     };
 
 }

@@ -38,7 +38,7 @@ Status createLinearElastic(Input::Data& input, MaterialTuple& mt);
 Status createDirichletBC(Input::Data& input, pugi::xml_node& liml8, NodeGroups& node_groups);
 Status createNeumannBC(Input::Data& input, pugi::xml_node& liml8, NodeGroups& node_groups);
 
-Status Input::LoadLISA(Input::Data& input, std::string filepath){
+Status Input::LISA::Load(Input::Data& input, std::string filepath){
 
     pugi::xml_document xml;
 

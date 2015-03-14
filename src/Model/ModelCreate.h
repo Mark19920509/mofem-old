@@ -12,6 +12,7 @@ namespace Model
     Status setupMaterialData(Input::Data& input, Model::Data& model);
     Status setupDirichletBC(Input::Data& input, Model::Data& model);
     Status setupNeumannBC(Input::Data& input, Model::Data& model);
+    Status setupControl(Input::Data& input, Model::Data& model);
 
     Status createNDS(Model::Data& model);   // Node DOF Set
     Status createNDM(Model::Data& model);   // Node DOF Map

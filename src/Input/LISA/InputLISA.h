@@ -6,6 +6,8 @@
 
 namespace Input{
 
-    Status LoadLISA(Input::Data& input, std::string filepath);
+    namespace LISA{
+        Status Load(Input::Data& input, std::string filepath);
+    }
 
 }

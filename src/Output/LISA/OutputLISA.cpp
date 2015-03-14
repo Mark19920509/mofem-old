@@ -9,7 +9,7 @@ using std::string;
 Status createEmptyNodes(Model::Data const& model, pugi::xml_node& liml8);
 Status fillNodeDisplacements(Model::Data const& model, Solution::Data const& sol, pugi::xml_node& liml8);
 
-Status Output::OpenLISA(std::string filepath, Output::File& out){
+Status Output::LISA::Open(std::string filepath, Output::File& out){
 
     // Setup XML file
     out.filepath = filepath;
@@ -41,7 +41,7 @@ Status Output::OpenLISA(std::string filepath, Output::File& out){
     return Status::SUCCESS;
 }
 
-Status Output::WriteTimestepLISA(Model::Data const& model, Solution::Data const& sol, numeric t, Output::File& out){
+Status Output::LISA::WriteTimestep(Model::Data const& model, Solution::Data const& sol, numeric t, Output::File& out){
     // Get the xml file and parent element
     pugi::xml_document& xml = *out.file.xml;
     pugi::xml_node liml8 = xml.child("liml8");
@@ -54,7 +54,7 @@ Status Output::WriteTimestepLISA(Model::Data const& model, Solution::Data const&
     return Status::SUCCESS;
 }
 
-Status Output::CloseLISA(Output::File& out){
+Status Output::LISA::Close(Output::File& out){
     pugi::xml_document& xml = *out.file.xml;
     xml.save_file(out.filepath.c_str(), "  ");
     delete out.file.xml;

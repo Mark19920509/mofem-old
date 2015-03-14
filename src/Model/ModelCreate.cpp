@@ -108,6 +108,13 @@ Status Model::setupNeumannBC(Input::Data& input, Model::Data& model){
     return Status::SUCCESS;
 }
 
+// Setup the control type
+Status Model::setupControl(Input::Data& input, Model::Data& model){
+    model.control_type = input.control_type;
+    copy(input.control_param, model.control_param);
+    return Status::SUCCESS;
+}
+
 // Create node DOF Signatures
 Status Model::createNDS(Model::Data& model)
 {

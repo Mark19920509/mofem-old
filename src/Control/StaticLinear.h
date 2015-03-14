@@ -7,7 +7,7 @@
 namespace Control{
 
     namespace StaticLinear{
-        Status run(FEM::Context& fem, Output::WriteTimestepFunc write_ts, Output::File file);
+        Status run(Model::Data& model, Solution::Data& sol, Output::WriteTimestepFunc write_ts, Output::File file);
     }
 
 }

@@ -65,8 +65,8 @@ public:
 
     // Allocate memory for this array
     void resize(int rows, int cols = 1){
-        assert(rows > 0);
-        assert(cols > 0);
+        assert(rows >= 0);
+        assert(cols >= 0);
 
         // No need to reallocate memory
         if (rows == _rows && cols == _cols) return;

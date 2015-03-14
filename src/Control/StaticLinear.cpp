@@ -1,28 +1,25 @@
 #include "StaticLinear.h"
 
-#include <FEM/FEMCreate.h>
+#include <FEM/FEM.h>
 #include <Solution/SolutionCreate.h>
 #include <Solver/CGS.h>
 
 using namespace Control;
 
-Status StaticLinear::run(FEM::Context& fem, Output::WriteTimestepFunc write_ts, Output::File file){
-    FEM::prepareModel(fem);
-    FEM::prepareSolution(fem);
+Status StaticLinear::run(Model::Data& model, Solution::Data& sol, Output::WriteTimestepFunc write_ts, Output::File file){
+    sol.vec[Solution::DISP].fill(0);
 
-    fem.solution.vec[Solution::DISP].fill(0);
-
-    Solution::assembleExtForce(fem.model, fem.solution, 3);
+    Solution::assembleExtForce(model, sol, 3);
 
     Element::FlagVector flags;
     flags[Element::CALC_STIFF_LINEAR] = true;
-    Solution::assembleElements(fem.model, fem.solution, flags);
+    Solution::assembleElements(model, sol, flags);
 
-    Solver::ConjugateGradient(fem.solution.mat[Solution::STIFF_LINEAR], 
-                              fem.solution.vec[Solution::F_EXT], 
-                              fem.solution.vec[Solution::DISP]);
+    Solver::ConjugateGradient(sol.mat[Solution::STIFF_LINEAR], 
+                              sol.vec[Solution::F_EXT], 
+                              sol.vec[Solution::DISP]);
 
-    write_ts(fem.model, fem.solution, 0, file);
+    write_ts(model, sol, 0, file);
 
     return Status::SUCCESS;
 }

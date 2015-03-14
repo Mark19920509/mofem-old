@@ -6,6 +6,7 @@
 #include <Material/Material.h>
 #include <Element/Element.h>
 #include <Node/Node.h>
+#include <Control/Control.h>
 
 namespace Model
 {
@@ -46,6 +47,10 @@ namespace Model
         DOF::Count ndof;
         DOF::Count ndof_fixed;
         DOF::Count ndof_solve;
+
+        // How to solve the problem
+        Control::Type control_type;
+        Array<numeric> control_param;
     };
 
 }

@@ -3,6 +3,7 @@
 #include <Util/Precision.h>
 #include <Element/Element.h>
 #include <Material/Material.h>
+#include <Control/Control.h>
 #include <vector>
 
 namespace Input
@@ -34,5 +35,10 @@ namespace Input
     Status addMaterial(Input::Data& input,
                        Material::Type mat_type,
                        std::vector<numeric> mat_param);
+
+    // Control type and parameter
+    Status setControl(Input::Data& input,
+                      Control::Type control_type,
+                      std::vector<numeric> control_param);
 
 }

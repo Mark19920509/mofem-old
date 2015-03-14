@@ -1,10 +1,12 @@
-#include "FEMCreate.h"
+#include "FEM.h"
 
 #include <Element/Element.h>
 #include <Material/Material.h>
 
 #include <Model/ModelCreate.h>
 #include <Solution/SolutionCreate.h>
+
+#include <Control/StaticLinear.h>
 
 Status FEM::init(FEM::Context& fem){
     CHECK_STATUS( Element::defineTypes() );
@@ -18,6 +20,7 @@ Status FEM::prepareModel(Context& fem){
     CHECK_STATUS( Model::setupNodeData(fem.input, fem.model) );
     CHECK_STATUS( Model::setupMaterialData(fem.input, fem.model) );
     CHECK_STATUS( Model::setupElementData(fem.input, fem.model) );
+    CHECK_STATUS( Model::setupControl(fem.input, fem.model) );
 
     // Create the DOF signature and (node/element) DOF maps using the element node map
     CHECK_STATUS( Model::createNDS(fem.model) );
@@ -41,4 +44,17 @@ Status FEM::prepareSolution(Context& context){
     CHECK_STATUS( Solution::allocateMemory(context.model, context.solution) );
 
     return Status::SUCCESS;
+}
+
+Status FEM::run(Context& fem, Output::WriteTimestepFunc write_ts, Output::File file){
+
+    FEM::prepareModel(fem);
+    FEM::prepareSolution(fem);
+
+    switch (fem.model.control_type){
+    case Control::STATIC_LINEAR: 
+        return Control::StaticLinear::run(fem.model, fem.solution, write_ts, file);
+    }
+
+    return{ Status::NOT_IMPLEMENTED, "Control type " + std::to_string(fem.model.control_type) + " not implemented"};
 }

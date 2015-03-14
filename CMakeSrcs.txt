@@ -16,13 +16,15 @@ SET(SRC_ELEMENT_TRUSS
 SET(SRC_INPUT
     src/Input/InputData.h 
     src/Input/InputCreate.h 
-    src/Input/InputCreate.cpp
-    src/Input/InputLISA.h
-    src/Input/InputLISA.cpp)
+    src/Input/InputCreate.cpp)
+SET(SRC_INPUT_LISA
+    src/Input/LISA/InputLISA.h 
+    src/Input/LISA/InputLISA.cpp)
 SET(SRC_OUTPUT
-    src/Output/Output.h
-    src/Output/OutputLISA.h
-    src/Output/OutputLISA.cpp)
+    src/Output/Output.h)
+SET(SRC_OUTPUT_LISA
+    src/Output/LISA/OutputLISA.h
+    src/Output/LISA/OutputLISA.cpp)
 SET(SRC_MATERIAL
     src/Material/Material.h 
     src/Material/Material.cpp
@@ -53,12 +55,13 @@ SET(SRC_UTIL
     src/Util/pugixml.cpp)
 SET(SRC_FEM
     src/FEM/FEMContext.h
-    src/FEM/FEMCreate.h
-    src/FEM/FEMCreate.cpp)
+    src/FEM/FEM.h
+    src/FEM/FEM.cpp)
 SET(SRC_SOLVER
     src/Solver/CGS.h
     src/Solver/CGS.cpp)
 SET(SRC_CONTROL
+    src/Control/Control.h
     src/Control/StaticLinear.h
     src/Control/StaticLinear.cpp)
     
@@ -69,7 +72,9 @@ SET(SRC_CONTROL
      ${SRC_ELEMENT}
      ${SRC_ELEMENT_TRUSS}
      ${SRC_INPUT}
+     ${SRC_INPUT_LISA}
      ${SRC_OUTPUT}
+     ${SRC_OUTPUT_LISA}
      ${SRC_MATERIAL}
      ${SRC_MATERIAL_LINEAR_ELASTIC}
      ${SRC_MODEL}
