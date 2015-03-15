@@ -21,6 +21,8 @@ using MaterialMap = unordered_map < string, pugi::xml_node >;
 using NodeGroups = unordered_map < string, unordered_set<Node::Id>> ;
 using ElementGroups = unordered_map < string, unordered_set<Element::Id> > ;
 
+Status setControlType(Input::Data& input, pugi::xml_node& xml);
+
 Status createNodeGroups(Input::Data& input, pugi::xml_node& xml, NodeGroups& node_groups);
 Status createNodes(Input::Data& input, pugi::xml_node& xml);
 
@@ -50,6 +52,8 @@ Status Input::LISA::Load(Input::Data& input, std::string filepath){
         return Status(Status::FILE_NOT_PARSED, "Could not parse XML file " + filepath);
 
     auto liml8 = xml.child("liml8");
+
+    CHECK_STATUS(setControlType(input, liml8));
 
     NodeGroups node_groups;
     createNodeGroups(input, liml8, node_groups);
@@ -81,6 +85,17 @@ Status Input::LISA::Load(Input::Data& input, std::string filepath){
     createDirichletBC(input, liml8, node_groups);
     createNeumannBC(input, liml8, node_groups);
 
+    return Status::SUCCESS;
+}
+
+Status setControlType(Input::Data& input, pugi::xml_node& xml){
+    pugi::xml_node analysis = xml.child("analysis");
+    string type = analysis.attribute("type").as_string();
+    if (type == "S30"){
+        input.control_type = Control::STATIC_LINEAR;
+    }else{
+        return{ Status::NOT_IMPLEMENTED, "Control type in input '" + type + "' is not implemented" };
+    }
     return Status::SUCCESS;
 }
 
