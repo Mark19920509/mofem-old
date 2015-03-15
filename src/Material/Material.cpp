@@ -1,6 +1,6 @@
 #include <Material/Material.h>
 #include <Material/MaterialCalculate.h>
-#include <Material/LinearElastic/LinearElastic.h>
+#include <Material/LinearElastic.h>
 #include <Model/ModelData.h>
 
 namespace Material{

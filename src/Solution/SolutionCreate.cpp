@@ -1,7 +1,7 @@
 
 #include <Util/Array.h>
 #include <Solution/SolutionCreate.h>
-#include <Element/Truss/Truss.h>
+#include <Element/Truss.h>
 
 Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
 

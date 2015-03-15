@@ -3,8 +3,8 @@
 
 #include <FEM/FEMContext.h>
 #include <FEM/FEM.h>
-#include <Input/LISA/InputLISA.h>
-#include <Output/LISA/OutputLISA.h>
+#include <Input/InputLISA.h>
+#include <Output/OutputLISA.h>
 #include <Control/StaticLinear.h>
 
 

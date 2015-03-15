@@ -9,29 +9,25 @@ SET(SRC_DOF
     src/DOF/DOF.cpp)
 SET(SRC_ELEMENT 
     src/Element/Element.h 
-    src/Element/Element.cpp)
-SET(SRC_ELEMENT_TRUSS
-    src/Element/Truss/Truss.h 
-    src/Element/Truss/TrussLinear.cpp)
+    src/Element/Element.cpp
+    src/Element/Truss.h 
+    src/Element/TrussLinear.cpp)
 SET(SRC_INPUT
     src/Input/InputData.h 
     src/Input/InputCreate.h 
-    src/Input/InputCreate.cpp)
-SET(SRC_INPUT_LISA
-    src/Input/LISA/InputLISA.h 
-    src/Input/LISA/InputLISA.cpp)
+    src/Input/InputCreate.cpp
+    src/Input/InputLISA.h 
+    src/Input/InputLISA.cpp)
 SET(SRC_OUTPUT
-    src/Output/Output.h)
-SET(SRC_OUTPUT_LISA
-    src/Output/LISA/OutputLISA.h
-    src/Output/LISA/OutputLISA.cpp)
+    src/Output/Output.h
+    src/Output/OutputLISA.h
+    src/Output/OutputLISA.cpp)
 SET(SRC_MATERIAL
     src/Material/Material.h 
     src/Material/Material.cpp
-    src/Material/MaterialCalculate.h)
-SET(SRC_MATERIAL_LINEAR_ELASTIC
-    src/Material/LinearElastic/LinearElastic.h
-    src/Material/LinearElastic/LinearElastic.cpp)
+    src/Material/MaterialCalculate.h
+    src/Material/LinearElastic.h
+    src/Material/LinearElastic.cpp)
 SET(SRC_MODEL
     src/Model/ModelData.h
     src/Model/ModelGatherScatter.h
@@ -70,13 +66,9 @@ SET(SRC_CONTROL
      ${SRC_CS}
      ${SRC_DOF} 
      ${SRC_ELEMENT}
-     ${SRC_ELEMENT_TRUSS}
      ${SRC_INPUT}
-     ${SRC_INPUT_LISA}
      ${SRC_OUTPUT}
-     ${SRC_OUTPUT_LISA}
      ${SRC_MATERIAL}
-     ${SRC_MATERIAL_LINEAR_ELASTIC}
      ${SRC_MODEL}
      ${SRC_NODE}
      ${SRC_SOLUTION}
