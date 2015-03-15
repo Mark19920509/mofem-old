@@ -6,6 +6,6 @@
 
 namespace Solver{
 
-    Status ConjugateGradient(SparseMatrix<numeric>& A, Vector<numeric>& b, Vector<numeric>& x, numeric tol = 1e-4, unsigned int max_iter = 0);
+    Status ConjugateGradient(SparseMatrix<numeric>& A, Vector<numeric>& b, Vector<numeric>& x, numeric tol = 1e-6, unsigned int max_iter = 0);
 
 }

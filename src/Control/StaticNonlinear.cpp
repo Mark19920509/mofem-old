@@ -3,7 +3,6 @@
 #include <FEM/FEM.h>
 #include <Solution/SolutionCreate.h>
 #include <Solver/CGS.h>
-#include <Eigen/IterativeLinearSolvers>
 
 using namespace Control;
 
@@ -54,8 +53,7 @@ Status StaticNonlinear::run(Model::Data& model, Solution::Data& sol, Output::Wri
         while (iter < max_iter ){
 
             // Find new displacement
-            delta_U = solver.compute(K_e).solve(R);
-            //Solver::ConjugateGradient(K_e, R, delta_U);
+            Solver::ConjugateGradient(K_e, R, delta_U);
             U += delta_U;
 
             // Reassemble, find residual
