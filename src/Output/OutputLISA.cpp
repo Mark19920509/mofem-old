@@ -1,15 +1,19 @@
 #include "OutputLISA.h"
 
+#include <iostream>
 #include <Util/pugixml.hpp>
 #include <Util/Precision.h>
 #include <Model/ModelGatherScatter.h>
+#include <Control/StaticNonlinear.h>
 
 using std::string;
+
+enum {TIMESTEP_ID, COUNT};
 
 Status createEmptyNodes(Model::Data const& model, pugi::xml_node& liml8);
 Status fillNodeDisplacements(Model::Data const& model, Solution::Data const& sol, pugi::xml_node& liml8);
 
-Status Output::LISA::Open(std::string filepath, Output::File& out){
+Status Output::LISA::Open(Model::Data const& model, std::string filepath, Output::File& out){
 
     // Setup XML file
     out.filepath = filepath;
@@ -38,18 +42,44 @@ Status Output::LISA::Open(std::string filepath, Output::File& out){
     for (auto child : temp.children())
         xml.child("liml8").child("solution").append_copy(child);
 
+    // Results section
+    pugi::xml_node results = liml8.child("solution").append_child("results");
+
+    // Build empty timesteps for nonlinear control 
+    if (model.control_type == Control::STATIC_NONLINEAR){
+
+        int timesteps = (int) model.control_param(Control::StaticNonlinear::TIMESTEPS);
+        numeric dt = model.control_param(Control::StaticNonlinear::STEPSIZE);
+
+        // Create timesteps
+        numeric t = 0;
+        for (int i = 0; i < timesteps; i++){
+            pugi::xml_node timestep = results.append_child("timestep");
+            timestep.append_attribute("id").set_value(i);
+            timestep.append_attribute("time").set_value(t);
+            t += dt;
+        }
+
+    }
+
+
     return Status::SUCCESS;
 }
 
-Status Output::LISA::WriteTimestep(Model::Data const& model, Solution::Data const& sol, numeric t, Output::File& out){
-    // Get the xml file and parent element
-    pugi::xml_document& xml = *out.file.xml;
-    pugi::xml_node liml8 = xml.child("liml8");
+Status Output::LISA::WriteTimestep(Model::Data const& model, Solution::Data const& sol, int timestep_id, numeric timestep, Output::File& out){
+    // Get results section
+    pugi::xml_node results = (*out.file.xml).child("liml8").child("solution").child("results");
 
-    pugi::xml_node results = liml8.child("solution").append_child("results");
+    if (model.control_type == Control::STATIC_LINEAR){
+        createEmptyNodes(model, results);
+        fillNodeDisplacements(model, sol, results);
 
-    createEmptyNodes(model, results);
-    fillNodeDisplacements(model, sol, results);
+    // Write timesteps for nonlinear solution
+    }else if (model.control_type == Control::STATIC_NONLINEAR){
+        pugi::xml_node timestep = results.find_child_by_attribute("timestep", "id", std::to_string(timestep_id).c_str());
+        createEmptyNodes(model, timestep);
+        fillNodeDisplacements(model, sol, timestep);
+    }
 
     return Status::SUCCESS;
 }

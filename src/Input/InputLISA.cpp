@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <math.h>
+#include <Control/StaticNonlinear.h>
 
 using std::vector;
 using std::tuple;
@@ -85,6 +86,8 @@ Status Input::LISA::Load(Input::Data& input, std::string filepath){
     createDirichletBC(input, liml8, node_groups);
     createNeumannBC(input, liml8, node_groups);
 
+    std::cout << "DONE.\n\n";
+
     return Status::SUCCESS;
 }
 
@@ -93,6 +96,26 @@ Status setControlType(Input::Data& input, pugi::xml_node& xml){
     string type = analysis.attribute("type").as_string();
     if (type == "S30"){
         input.control_type = Control::STATIC_LINEAR;
+        std::cout << "STATIC LINEAR" << std::endl;
+
+    }else if (type == "D30"){
+        input.control_type = Control::STATIC_NONLINEAR;
+        input.control_param.resize(Control::StaticNonlinear::COUNT);
+
+        // Get timestep and stepsize
+        input.control_param[Control::StaticNonlinear::TIMESTEPS] = analysis.attribute("timesteps").as_int();
+        input.control_param[Control::StaticNonlinear::STEPSIZE] = analysis.attribute("stepsize").as_double();
+
+        // Get tolerance and max iterations
+        numeric tol = xml.find_child_by_attribute("elset", "name", "NEWTON_TOL").attribute("material").as_double();
+        numeric max_iter = xml.find_child_by_attribute("elset", "name", "NEWTON_MAX_ITER").attribute("material").as_int(); 
+        if (tol == 0) tol = 1e-6;
+        if (max_iter == 0) max_iter = 10;
+        input.control_param[Control::StaticNonlinear::NEWTON_TOL] = tol;
+        input.control_param[Control::StaticNonlinear::NEWTON_MAX_ITER] = max_iter;
+
+        std::cout << "STATIC NON-LINEAR " << std::to_string(input.control_param);
+
     }else{
         return{ Status::NOT_IMPLEMENTED, "Control type in input '" + type + "' is not implemented" };
     }

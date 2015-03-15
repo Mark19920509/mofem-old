@@ -9,8 +9,8 @@
 namespace Output{
 
     namespace LISA{
-        Status Open(std::string filepath, Output::File& out);
-        Status WriteTimestep(Model::Data const& model, Solution::Data const& sol, numeric t, Output::File& out);
+        Status Open(Model::Data const& model, std::string filepath, Output::File& out);
+        Status WriteTimestep(Model::Data const& model, Solution::Data const& sol, int timestep_id, numeric timestep, Output::File& out);
         Status Close(Output::File& out);
     }
 

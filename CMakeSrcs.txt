@@ -59,7 +59,9 @@ SET(SRC_SOLVER
 SET(SRC_CONTROL
     src/Control/Control.h
     src/Control/StaticLinear.h
-    src/Control/StaticLinear.cpp)
+    src/Control/StaticLinear.cpp
+    src/Control/StaticNonlinear.h
+    src/Control/StaticNonlinear.cpp)
     
  SET(SRC_ALL
      ${SRC_MAIN} 

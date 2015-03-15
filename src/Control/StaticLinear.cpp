@@ -7,6 +7,8 @@
 using namespace Control;
 
 Status StaticLinear::run(Model::Data& model, Solution::Data& sol, Output::WriteTimestepFunc write_ts, Output::File file){
+    std::cout << "STATIC LINEAR START" << std::endl;
+
     sol.vec[Solution::DISP].fill(0);
 
     Solution::assembleExtForce(model, sol, 3);
@@ -19,7 +21,9 @@ Status StaticLinear::run(Model::Data& model, Solution::Data& sol, Output::WriteT
                               sol.vec[Solution::F_EXT], 
                               sol.vec[Solution::DISP]);
 
-    write_ts(model, sol, 0, file);
+    write_ts(model, sol, 0, 0, file);
+
+    std::cout << "DONE." << std::endl;
 
     return Status::SUCCESS;
 }

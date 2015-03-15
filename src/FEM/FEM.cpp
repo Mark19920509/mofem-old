@@ -7,6 +7,7 @@
 #include <Solution/SolutionCreate.h>
 
 #include <Control/StaticLinear.h>
+#include <Control/StaticNonlinear.h>
 
 Status FEM::init(FEM::Context& fem){
     CHECK_STATUS( Element::defineTypes() );
@@ -48,12 +49,11 @@ Status FEM::prepareSolution(Context& context){
 
 Status FEM::run(Context& fem, Output::WriteTimestepFunc write_ts, Output::File file){
 
-    FEM::prepareModel(fem);
-    FEM::prepareSolution(fem);
-
     switch (fem.model.control_type){
     case Control::STATIC_LINEAR: 
         return Control::StaticLinear::run(fem.model, fem.solution, write_ts, file);
+    case Control::STATIC_NONLINEAR:
+        return Control::StaticNonlinear::run(fem.model, fem.solution, write_ts, file);
     }
 
     return{ Status::NOT_IMPLEMENTED, "Control type " + std::to_string(fem.model.control_type) + " not implemented"};

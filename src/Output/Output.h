@@ -3,6 +3,7 @@
 #include <string>
 #include <util/pugixml.hpp>
 #include <functional>
+#include <vector>
 
 #include <Model/ModelData.h>
 #include <Solution/SolutionData.h>
@@ -21,6 +22,6 @@ namespace Output{
     };
 
     // Signature of time-step output function
-    using WriteTimestepFunc = std::function < Status(Model::Data const&, Solution::Data const&, numeric, Output::File&) > ;
+    using WriteTimestepFunc = std::function < Status(Model::Data const&, Solution::Data const&, int, numeric, Output::File&) > ;
 
 }

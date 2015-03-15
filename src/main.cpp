@@ -17,10 +17,13 @@ int main() {
 
     // Load file into the input
     CHECK_STATUS(Input::LISA::Load(fem.input, filepath));
-    
+
+    FEM::prepareModel(fem);
+    FEM::prepareSolution(fem);
+
     // Prepare output file
     Output::File out_file;
-    Output::LISA::Open(filepath, out_file);
+    Output::LISA::Open(fem.model, filepath, out_file);
 
     // Start!
     CHECK_STATUS(FEM::run(fem, Output::LISA::WriteTimestep, out_file));

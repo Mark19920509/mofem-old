@@ -17,6 +17,7 @@ Status Solver::ConjugateGradient(SparseMatrix<numeric>& A, Vector<numeric>& b, V
 
     r = b - A*x;
     p = r;
+    error = r.norm();
 
     unsigned int iter = 0;
     while (error > tol && iter <= max_iter){

@@ -27,12 +27,10 @@ namespace Element{
 
                 // Difference between node positions
                 VectorF<numeric, 3> diff_ref;
-                VectorF<numeric, 3> diff_act;
 
                 Material::Id mat_id;    // Material Id
                 numeric A;              // Truss area
                 numeric L_ref;          // Reference length
-                numeric L_act;          // Actual length
 
                 numeric eps_11;         // Strain
                 numeric sig_11;         // Stress
@@ -62,22 +60,19 @@ namespace Element{
                     diff_ref = model.node_pos.row(nidB) - model.node_pos.row(nidA);
                     L_ref = diff_ref.norm();
 
-                    // Current length
-                    L_act = (diff_ref + (u2 - u1)).norm();
-
                     // Local CS
                     local_cs = diff_ref / L_ref;
 
-                    // Strain
-                    eps_11 = (L_act - L_ref) / L_ref;
+                    // Local to global transformation @ node
+                    CS::calcTransform(local_cs, CS::global_basis_3D, T_node);
+
+                    // Strain (convert displacement to truss CS)
+                    eps_11 = (T_node.transpose()*(u2 - u1) / L_ref)(0);
 
                     // Stress
                     mat_id = model.elem_mat_id(eid);
                     A = model.elem_param(eid, AREA);
                     Material::calculate1D(model, mat_id, eps_11, sig_11, C_11);
-
-                    // Local to global transformation @ node
-                    CS::calcTransform(local_cs, CS::global_basis_3D, T_node);
 
                     // Complete transformation matrix
                     T.block<3, 1>(0, 0) = T_node;
@@ -100,11 +95,9 @@ namespace Element{
                         numeric fac = C_11*A / L_ref;
                         ke_local << fac, -fac, -fac, fac;
                         ke_global = T*ke_local*T.transpose();
-
                         // Scatter
                         Model::scatterStiffness(model, sol, eid, ke_global, sol.mat[Solution::STIFF_LINEAR]);
                     }
-
                 }
                 return Status::SUCCESS;
             }
