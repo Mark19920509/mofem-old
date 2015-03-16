@@ -32,11 +32,15 @@ Status Model::setupElementData(Input::Data& input, Model::Data& model)
     Element::Id eid = 0;
     model.elem_group_offset.resize(Element::TYPE_COUNT+1);
     for (int t = 0; t < Element::TYPE_COUNT; t++){
-        while (model.elem_type(eid) != t) eid++;
+        while (model.elem_type(eid) > t){
+            model.elem_group_offset(t) = eid;
+            t++;
+        }
+        while ((eid < num_elem) && (model.elem_type(eid) != t)) eid++;
         model.elem_group_offset(t) = eid;
     }
     model.elem_group_offset(Element::TYPE_COUNT) = model.elem_ids.rows();
-
+    std::cout << to_string(model.elem_group_offset) << std::endl;
     return Status::SUCCESS;
 }
 

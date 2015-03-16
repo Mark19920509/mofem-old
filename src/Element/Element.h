@@ -8,10 +8,10 @@
 
 namespace Element{
     /** Element types available */
-    enum Type { TRUSS_LINEAR, TYPE_COUNT };
+    enum Type { TRUSS_LINEAR, TRUSS_NONLINEAR, TYPE_COUNT };
 
     /** Flags to instruct element routines what is required */
-    enum CalcFlags { CALC_INT_FORCE, CALC_STIFF_LINEAR, FLAG_COUNT };
+    enum CalcFlags { CALC_INT_FORCE, CALC_STIFF_MAT, CALC_STIFF_GEO, FLAG_COUNT };
 
     using Id = int;
     using Count = int;

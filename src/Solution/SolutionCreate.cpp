@@ -40,11 +40,13 @@ Status Solution::allocateMemory(Model::Data const& model, Solution::Data& sol){
 }
 
 Status Solution::assembleElements(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags){
-    sol.mat[STIFF_LINEAR] *= 0;
+    sol.mat[STIFF_MAT] *= 0;
+    sol.mat[STIFF_GEO] *= 0;
     sol.vec[F_DBC].fill(0);
     sol.vec[F_INT].fill(0);
 
     Element::Truss::Linear::calculate(model, sol, flags);
+    Element::Truss::Nonlinear::calculate(model, sol, flags);
 
     return Status::SUCCESS;
 }

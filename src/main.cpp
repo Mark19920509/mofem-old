@@ -9,7 +9,7 @@
 
 
 int main() {
-    std::string filepath = "space_struct.liml";
+    std::string filepath = "buckle.liml";
 
     // FEM context contains the input, model and solution
     FEM::Context fem;

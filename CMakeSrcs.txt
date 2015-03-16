@@ -11,7 +11,8 @@ SET(SRC_ELEMENT
     src/Element/Element.h 
     src/Element/Element.cpp
     src/Element/Truss.h 
-    src/Element/TrussLinear.cpp)
+    src/Element/TrussLinear.cpp
+    src/Element/TrussNonlinear.cpp)
 SET(SRC_INPUT
     src/Input/InputData.h 
     src/Input/InputCreate.h 

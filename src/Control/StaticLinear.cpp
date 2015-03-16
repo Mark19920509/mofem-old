@@ -14,10 +14,10 @@ Status StaticLinear::run(Model::Data& model, Solution::Data& sol, Output::WriteT
     Solution::assembleExtForce(model, sol, 3);
 
     Element::FlagVector flags;
-    flags[Element::CALC_STIFF_LINEAR] = true;
+    flags[Element::CALC_STIFF_MAT] = true;
     Solution::assembleElements(model, sol, flags);
 
-    Solver::ConjugateGradient(sol.mat[Solution::STIFF_LINEAR], 
+    Solver::ConjugateGradient(sol.mat[Solution::STIFF_MAT], 
                               sol.vec[Solution::F_EXT], 
                               sol.vec[Solution::DISP]);
 

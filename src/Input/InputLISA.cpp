@@ -27,10 +27,12 @@ Status setControlType(Input::Data& input, pugi::xml_node& xml);
 Status createNodeGroups(Input::Data& input, pugi::xml_node& xml, NodeGroups& node_groups);
 Status createNodes(Input::Data& input, pugi::xml_node& xml);
 
+Status findNonlinearElements(pugi::xml_node& xml, unordered_set<Element::Id>& nln_eids);
+
 Status createElementGroups(Input::Data& input, pugi::xml_node& xml, ElementGroups& elem_groups);
 Status createElementTuples(Input::Data& input, pugi::xml_node& xml, vector<ElementTuple>& element_tuples);
-Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et);
-Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, vector<Node::Id>& nodes);
+Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, bool nonlinear);
+Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, vector<Node::Id>& nodes, bool nonlinear);
 
 Status processGeometric1D(pugi::xml_node geo, numeric& area);
 
@@ -77,9 +79,14 @@ Status Input::LISA::Load(Input::Data& input, std::string filepath){
         CHECK_STATUS(createMaterial(input, mt));
     }
 
+    // Find non-linear element group
+    unordered_set<Element::Id> nonlinear_eids;
+    findNonlinearElements(liml8, nonlinear_eids);
+
     // Process elements
     for (ElementTuple& et : element_tuples){
-        CHECK_STATUS(createElement(input, material_map, et));
+        bool is_nonlinear = (nonlinear_eids.find(std::get<0>(et)) != nonlinear_eids.end());
+        CHECK_STATUS(createElement(input, material_map, et, is_nonlinear));
     }
 
     // Process BC
@@ -219,7 +226,7 @@ Status createLinearElastic(Input::Data& input, MaterialTuple& mt){
     return Status::SUCCESS;
 }
 
-Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et){
+Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, bool nonlinear){
 
     pugi::xml_node elset = std::get<1>(et);
     pugi::xml_node elem = std::get<2>(et);
@@ -251,14 +258,14 @@ Status createElement(Input::Data& input, MaterialMap& mat_map, ElementTuple& et)
         if (elem.attribute("truss").empty()){
             return { Status::NOT_IMPLEMENTED, "Beam element not available" };
         }else{
-           return createTruss(input, mat_map, et, nodes);
+           return createTruss(input, mat_map, et, nodes, nonlinear);
         }
     }
 
     return Status::SUCCESS;
 }
 
-Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, vector<Node::Id>& nodes){
+Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, vector<Node::Id>& nodes, bool nonlinear){
 
     Status result;
 
@@ -288,9 +295,14 @@ Status createTruss(Input::Data& input, MaterialMap& mat_map, ElementTuple& et, v
     result = processGeometric1D(geo, A);
     if (result != Status::SUCCESS) return result;
 
-    // Add truss
-    std::cout << "ELEM TRUSS_LINEAR " << mid << " " << A << " " << std::to_string(nodes);
-    return Input::addElement(input, Element::TRUSS_LINEAR, mid, {A}, nodes);
+    if (nonlinear){
+        std::cout << "ELEM TRUSS_NONLINEAR " << mid << " " << A << " " << std::to_string(nodes);
+        return Input::addElement(input, Element::TRUSS_NONLINEAR, mid, { A }, nodes);
+    }else{
+        std::cout << "ELEM TRUSS_LINEAR " << mid << " " << A << " " << std::to_string(nodes);
+        return Input::addElement(input, Element::TRUSS_LINEAR, mid, { A }, nodes);
+    }
+    
 }
 
 
@@ -364,5 +376,14 @@ Status createNeumannBC(Input::Data& input, pugi::xml_node& liml8, NodeGroups& no
 
     }
 
+    return Status::SUCCESS;
+}
+
+Status findNonlinearElements(pugi::xml_node& liml8, unordered_set<Element::Id>& nln_eids){
+    auto large_strain_elements = liml8.find_child_by_attribute("elementselection", "name", "LARGE_STRAIN");
+    for (pugi::xml_node elem : large_strain_elements.children("element"))
+        nln_eids.insert(elem.attribute("eid").as_int() - 1);
+
+    std::cout << "NUM LARGE STRAIN = " << nln_eids.size() << std::endl;
     return Status::SUCCESS;
 }

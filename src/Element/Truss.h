@@ -15,5 +15,8 @@ namespace Element{
         namespace Linear{
             Status calculate(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags);
         }
+        namespace Nonlinear{
+            Status calculate(Model::Data const& model, Solution::Data& sol, Element::FlagVector& flags);
+        }
     }
 }

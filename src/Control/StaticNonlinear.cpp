@@ -10,7 +10,8 @@ Status StaticNonlinear::run(Model::Data& model, Solution::Data& sol, Output::Wri
     
     // What to calculate
     Element::FlagVector flags;
-    flags[Element::CALC_STIFF_LINEAR] = true;
+    flags[Element::CALC_STIFF_MAT] = true;
+    flags[Element::CALC_STIFF_GEO] = true;
     flags[Element::CALC_INT_FORCE] = true;
 
     // Solve Parameters
@@ -23,7 +24,9 @@ Status StaticNonlinear::run(Model::Data& model, Solution::Data& sol, Output::Wri
     Vector<numeric>& U = sol.vec[Solution::DISP];
     Vector<numeric>& F_int = sol.vec[Solution::F_INT];
     Vector<numeric>& F_ext = sol.vec[Solution::F_EXT];
-    SparseMatrix<numeric>& K_e = sol.mat[Solution::STIFF_LINEAR];
+    SparseMatrix<numeric>& K_mat = sol.mat[Solution::STIFF_MAT];
+    SparseMatrix<numeric>& K_geo = sol.mat[Solution::STIFF_GEO];
+    SparseMatrix<numeric>& K_all = sol.mat[Solution::STIFF_ALL];
 
     // Residual and delta-u
     Vector<numeric> R(model.ndof_solve);
@@ -53,7 +56,8 @@ Status StaticNonlinear::run(Model::Data& model, Solution::Data& sol, Output::Wri
         while (iter < max_iter ){
 
             // Find new displacement
-            Solver::ConjugateGradient(K_e, R, delta_U);
+            K_all = K_mat + K_geo;
+            Solver::ConjugateGradient(K_all, R, delta_U);
             U += delta_U;
 
             // Reassemble, find residual
