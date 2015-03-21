@@ -1,8 +1,5 @@
 #include "Truss.h"
 
-using namespace Element::Truss::Linear;
-
-
 namespace Element{
     namespace Truss{
         namespace Nonlinear{
